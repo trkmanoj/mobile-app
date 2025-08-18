@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -24,9 +27,10 @@ public class User implements UserDetails {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Type(type = "uuid-char")
+    private UUID id;
     private String firstName;
     private String lastName;
     private String username;
@@ -64,7 +68,7 @@ public class User implements UserDetails {
         return status;
     }
 
-    public User(Long id, String firstName, String lastName, String username, String password, Role role, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public User(UUID id, String firstName, String lastName, String username, String password, Role role, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
