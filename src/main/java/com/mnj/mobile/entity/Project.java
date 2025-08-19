@@ -12,10 +12,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @Builder
@@ -42,12 +39,12 @@ public class Project {
     private boolean status = true;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    @ManyToMany
-    @JoinTable(
-            name = "project_members",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "member_id")
-    )
-    private Set<Member> members = new HashSet<>();
+//    @ManyToMany
+//    @JoinTable(
+//            name = "project_members",
+//            joinColumns = @JoinColumn(name = "project_id"),
+//            inverseJoinColumns = @JoinColumn(name = "member_id")
+//    )
+//    private Set<Member> members = new HashSet<>();
 
 }
