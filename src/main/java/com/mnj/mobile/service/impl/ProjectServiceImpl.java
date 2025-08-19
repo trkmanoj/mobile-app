@@ -7,7 +7,6 @@ import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Project;
 import com.mnj.mobile.repository.ProjectRepository;
 import com.mnj.mobile.service.ProjectService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class ProjectServiceImpl implements ProjectService {
 
@@ -34,6 +32,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Value("${application.attachment}")
     private String filePath;
+
+    public ProjectServiceImpl(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
 
     @Override
     public String createProject(MultipartFile[] files, String projectStr) throws IOException {
@@ -73,7 +75,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO findById(String projectId) {
-        log.info("ProjectServiceImpl:createProject execution started.");
+        log.info("ProjectServiceImpl:findById execution started.");
 
         Project project = projectRepository.findById(UUID.fromString(projectId)).get();
 
@@ -98,7 +100,7 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getModifiedDate()
         );
 
-        log.info("ProjectServiceImpl:createProject execution ended.");
+        log.info("ProjectServiceImpl:findById execution ended.");
         return projectDTO;
     }
 

@@ -1,13 +1,11 @@
 package com.mnj.mobile.service.impl;
 
 import com.mnj.mobile.dto.TaskDTO;
-import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.entity.TaskAttachment;
 import com.mnj.mobile.repository.ProjectRepository;
 import com.mnj.mobile.repository.TaskRepository;
 import com.mnj.mobile.service.TaskService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class TaskServiceImpl implements TaskService {
 
@@ -35,6 +32,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Value("${application.attachment}")
     private String filePath;
+
+    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository) {
+        this.taskRepository = taskRepository;
+        this.projectRepository = projectRepository;
+    }
 
     @Override
     public String createTask(MultipartFile[] files, TaskDTO taskDTO) throws IOException {
