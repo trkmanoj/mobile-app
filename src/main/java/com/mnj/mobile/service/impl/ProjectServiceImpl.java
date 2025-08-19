@@ -1,11 +1,9 @@
 package com.mnj.mobile.service.impl;
 
-import com.google.gson.Gson;
 import com.mnj.mobile.dto.AttachmentDTO;
 import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
-import com.mnj.mobile.entity.Member;
 import com.mnj.mobile.entity.Project;
 import com.mnj.mobile.repository.MemberRepository;
 import com.mnj.mobile.repository.ProjectRepository;
@@ -21,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,8 +33,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Value("${application.attachment}")
     private String filePath;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, MemberRepository memberRepository) {
         this.projectRepository = projectRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Override
