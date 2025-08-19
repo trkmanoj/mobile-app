@@ -23,7 +23,7 @@ public class ProjectController {
     private ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse> createProject(@RequestParam("files") MultipartFile[] files, @RequestParam("project") String project) {
+    public ResponseEntity<CommonResponse> createProject(@RequestParam("files") MultipartFile[] files, @RequestBody ProjectDTO project) {
         log.info("ProjectController::createProject project {}", project);
         CommonResponse commonResponse = new CommonResponse();
         try {

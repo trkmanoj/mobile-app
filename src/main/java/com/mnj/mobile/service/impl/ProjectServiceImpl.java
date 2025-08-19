@@ -2,9 +2,12 @@ package com.mnj.mobile.service.impl;
 
 import com.google.gson.Gson;
 import com.mnj.mobile.dto.AttachmentDTO;
+import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
+import com.mnj.mobile.entity.Member;
 import com.mnj.mobile.entity.Project;
+import com.mnj.mobile.repository.MemberRepository;
 import com.mnj.mobile.repository.ProjectRepository;
 import com.mnj.mobile.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +30,8 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRepository projectRepository;
+
+    private MemberRepository memberRepository;
 
     @Value("${application.attachment}")
     private String filePath;
@@ -38,10 +41,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public String createProject(MultipartFile[] files, String projectStr) throws IOException {
+    public String createProject(MultipartFile[] files, ProjectDTO projectDTO) throws IOException {
         log.info("ProjectServiceImpl:createProject execution started.");
-        Gson gson = new Gson();
-        Project project = gson.fromJson(projectStr, Project.class);
 
         List<Attachment> list = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -64,9 +65,21 @@ public class ProjectServiceImpl implements ProjectService {
             list.add(attachment);
         }
 
-        project.setAttachments(list);
-        project.setCreatedDate(LocalDateTime.now());
-        project.setModifiedDate(LocalDateTime.now());
+        Set<UUID> memberIds = projectDTO.getTeamMembers().stream().map(MemberDTO::getId).collect(Collectors.toSet());
+
+        Project project = new Project(
+                projectDTO.getProjectId(),
+                projectDTO.getName(),
+                projectDTO.getStartDate(),
+                projectDTO.getEndDate(),
+                projectDTO.getTeam(),
+                list,
+                projectDTO.getProjectStatus(),
+                projectDTO.isStatus(),
+                projectDTO.getCreatedDate(),
+                projectDTO.getModifiedDate(),
+                new HashSet<>(memberRepository.findAllById(memberIds))
+        );
 
         projectRepository.save(project);
         log.info("ProjectServiceImpl:createProject execution ended.");
@@ -85,7 +98,15 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getStartDate(),
                 project.getEndDate(),
                 project.getTeam(),
-                project.getTeamMember(),
+                project.getMembers().stream().map(member ->
+                        new MemberDTO(
+                                member.getId(),
+                                member.getName(),
+                                member.getEmail(),
+                                member.getMobile(),
+                                member.getTeam(),
+                                member.isStatus()
+                        )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(attachment ->
                         new AttachmentDTO(
                                 attachment.getId(),
@@ -115,7 +136,15 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getStartDate(),
                 project.getEndDate(),
                 project.getTeam(),
-                project.getTeamMember(),
+                project.getMembers().stream().map(member ->
+                        new MemberDTO(
+                                member.getId(),
+                                member.getName(),
+                                member.getEmail(),
+                                member.getMobile(),
+                                member.getTeam(),
+                                member.isStatus()
+                        )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(
                         attachment -> new AttachmentDTO(
                                 attachment.getId(),
