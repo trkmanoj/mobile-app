@@ -1,14 +1,12 @@
 package com.mnj.mobile.service.impl;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.mnj.mobile.dto.AttachmentDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Project;
 import com.mnj.mobile.repository.ProjectRepository;
 import com.mnj.mobile.service.ProjectService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,7 +25,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class ProjectServiceImpl implements ProjectService {
 
@@ -37,13 +33,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Value("${application.attachment}")
     private String filePath;
 
+    public ProjectServiceImpl(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
+
     @Override
     public String createProject(MultipartFile[] files, String projectStr) throws IOException {
         log.info("ProjectServiceImpl:createProject execution started.");
         Gson gson = new Gson();
-        Type listType = new TypeToken<List<Project>>() {
-        }.getType();
-        Project project = gson.fromJson(projectStr, listType);
+        Project project = gson.fromJson(projectStr, Project.class);
 
         List<Attachment> list = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -77,7 +75,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO findById(String projectId) {
-        log.info("ProjectServiceImpl:createProject execution started.");
+        log.info("ProjectServiceImpl:findById execution started.");
 
         Project project = projectRepository.findById(UUID.fromString(projectId)).get();
 
@@ -96,11 +94,43 @@ public class ProjectServiceImpl implements ProjectService {
                                 attachment.getMimeType(),
                                 attachment.getFileSize()
                         )).collect(Collectors.toList()),
+                project.getProjectStatus(),
+                project.isStatus(),
                 project.getCreatedDate(),
                 project.getModifiedDate()
         );
 
-        log.info("ProjectServiceImpl:createProject execution ended.");
+        log.info("ProjectServiceImpl:findById execution ended.");
         return projectDTO;
+    }
+
+    @Override
+    public List<ProjectDTO> findAll() {
+        log.info("ProjectServiceImpl:findAll execution started.");
+        List<Project> projects = projectRepository.findAll();
+
+        List<ProjectDTO> projectDTOS = projects.stream().map(project -> new ProjectDTO(
+                project.getProjectId(),
+                project.getName(),
+                project.getStartDate(),
+                project.getEndDate(),
+                project.getTeam(),
+                project.getTeamMember(),
+                project.getAttachments().stream().map(
+                        attachment -> new AttachmentDTO(
+                                attachment.getId(),
+                                attachment.getFileName(),
+                                attachment.getFilePath(),
+                                attachment.getMimeType(),
+                                attachment.getFileSize()
+                        )).collect(Collectors.toList()),
+                project.getProjectStatus(),
+                project.isStatus(),
+                project.getCreatedDate(),
+                project.getModifiedDate()
+        )).collect(Collectors.toList());
+
+        log.info("ProjectServiceImpl:findAll execution ended.");
+        return projectDTOS;
     }
 }

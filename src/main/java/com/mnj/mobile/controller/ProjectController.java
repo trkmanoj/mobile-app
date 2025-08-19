@@ -46,7 +46,7 @@ public class ProjectController {
 
 
 
-    @PostMapping("/{projectId}")
+    @GetMapping("/{projectId}")
     public ResponseEntity<CommonResponse> findProjectById(@PathVariable("projectId") String projectId) {
         log.info("ProjectController::findProjectById projectId {}", projectId);
         CommonResponse commonResponse = new CommonResponse();
@@ -64,6 +64,28 @@ public class ProjectController {
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
         } catch (Exception ex) {
             log.error("ProjectController:findProjectById error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<CommonResponse> findAll() {
+        log.info("ProjectController::findAll");
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            List<ProjectDTO> response = projectService.findAll();
+
+            if (response.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not Found Records."));
+                commonResponse.setStatus(CommonConst.NOT_FOUND_RECORD);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(response));
+            }
+            log.info("ProjectController::findAll response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("ProjectController:findAll error {}", ex.getMessage());
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
