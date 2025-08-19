@@ -1,6 +1,5 @@
 package com.mnj.mobile.entity;
 
-
 import com.mnj.mobile.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,26 +19,27 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "project")
-public class Project {
+@Table(name = "task")
+public class Task {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Type(type = "uuid-char")
-    private UUID projectId;
+    private UUID taskId;
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
     private String team;
-    private String teamMember;
+    @ManyToOne
+    @JoinColumn(name = "projectId")
+    private Project project;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "projectId",referencedColumnName = "projectId")
-    private List<Attachment> attachments;
+    private List<TaskAttachment> attachments;
     @Enumerated(EnumType.STRING)
-    private Status projectStatus = Status.PENDING;
+    private Status taskStatus = Status.PENDING;
     private boolean status = true;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-
 }

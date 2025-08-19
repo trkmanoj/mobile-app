@@ -13,16 +13,15 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectDTO {
-
-    private UUID projectId;
+public class TaskDTO {
+    private UUID taskId;
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
     private String team;
-    private String teamMember;
+    private String project;
     private List<AttachmentDTO> attachments;
-    private Status projectStatus;
+    private Status taskStatus;
     private boolean status;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
