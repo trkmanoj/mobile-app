@@ -1,5 +1,6 @@
 package com.mnj.mobile.service.impl;
 
+import com.mnj.mobile.dto.AttachmentDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.entity.TaskAttachment;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -80,5 +82,35 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
         log.info("TaskServiceImpl:createTask execution ended.");
         return "success.";
+    }
+
+    @Override
+    public List<TaskDTO> findByProject(String projectId) {
+        log.info("TaskServiceImpl:findByProject execution started.");
+
+        List<Task> tasks = taskRepository.findByProjectProjectId(UUID.fromString(projectId));
+
+        List<TaskDTO> taskDTOS = tasks.stream().map(task -> new TaskDTO(
+                task.getTaskId(),
+                task.getName(),
+                task.getStartDate(),
+                task.getEndDate(),
+                task.getTeam(),
+                task.getProject().getProjectId().toString(),
+                task.getAttachments().stream().map(attachment -> new AttachmentDTO(
+                        attachment.getId(),
+                        attachment.getFileName(),
+                        attachment.getFilePath(),
+                        attachment.getMimeType(),
+                        attachment.getFileSize()
+                )).collect(Collectors.toList()),
+                task.getTaskStatus(),
+                task.isStatus(),
+                task.getCreatedDate(),
+                task.getModifiedDate()
+        )).collect(Collectors.toList());
+
+        log.info("TaskServiceImpl:findByProject execution started.");
+        return taskDTOS;
     }
 }
