@@ -54,6 +54,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse register(UserDTO request) {
         log.info("AuthenticationServiceImpl:register execution started.");
 
+        if (isExistUserName(request.getUsername())){
+            return null;
+        }
+
         User user = userRepository.save(
                 new User(
                         null,
@@ -79,5 +83,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getUsername());
+    }
+
+    private boolean isExistUserName(String username){
+        boolean res = false;
+
+        User user = userRepository.findByUsername(username);
+
+        if (user != null){
+            return true;
+        }
+
+        return res;
     }
 }

@@ -6,6 +6,8 @@ import com.mnj.mobile.dto.UserDTO;
 import com.mnj.mobile.service.AuthenticationService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1")
 @AllArgsConstructor
+@Slf4j
 public class AuthenticationController {
 
 
@@ -39,7 +42,21 @@ public class AuthenticationController {
      * @throws Exception
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody UserDTO user) {
-        return ResponseEntity.ok(authenticationService.register(user));
+    public ResponseEntity<?> register(@RequestBody UserDTO user) {
+        log.info("AuthenticationController::register");
+        try {
+            AuthenticationResponse response = authenticationService.register(user);
+
+            if (response == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username already exist.");
+            }else {
+                log.info("AuthenticationController::register response {}",response.getUsername());
+                return ResponseEntity.ok(authenticationService.register(user));
+            }
+
+        }catch (Exception ex){
+            log.info("AuthenticationController::register error {}", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
