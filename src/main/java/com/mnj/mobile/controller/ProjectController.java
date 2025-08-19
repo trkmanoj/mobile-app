@@ -1,5 +1,8 @@
 package com.mnj.mobile.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.service.ProjectService;
 import com.mnj.mobile.util.CommonConst;
@@ -18,31 +21,44 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/project")
+@CrossOrigin("*")
 public class ProjectController {
 
     private ProjectService projectService;
+    @GetMapping("/ping")
+    public String ping() {
+        System.out.println("Hai");
+        return "pong";
+    }
+    @PostMapping("/save")
+    public ResponseEntity<CommonResponse> createProject(
+            @RequestParam(value = "files", required = false) MultipartFile[] files,
+            @RequestParam("project") String project) {
 
-    @PostMapping
-    public ResponseEntity<CommonResponse> createProject(@RequestParam("files") MultipartFile[] files, @RequestParam("project") String project) {
-        log.info("ProjectController::createProject project {}", project);
+        log.info("ProjectController::createProject projectJson {}", project);
+
         CommonResponse commonResponse = new CommonResponse();
         try {
+
             String response = projectService.createProject(files, project);
 
-            if (!response.equals("success.")) {
-                commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));
+            if (!"success.".equals(response)) {
+                commonResponse.setErrorMessages(Collections.singletonList("Failed! Please try again"));
                 commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
             } else {
                 commonResponse.setStatus(CommonConst.SUCCESS_CODE);
                 commonResponse.setPayload(Collections.singletonList(response));
             }
+
             log.info("ProjectController::createProject response {}", HttpStatus.OK.value());
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+
         } catch (Exception ex) {
             log.error("ProjectController:createProject error {}", ex.getMessage());
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 

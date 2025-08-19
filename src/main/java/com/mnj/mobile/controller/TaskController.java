@@ -23,11 +23,11 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse> createTask(@RequestParam("files") MultipartFile[] files, @RequestBody TaskDTO taskDTO) {
-        log.info("TaskController::createTask task {}", taskDTO);
+    public ResponseEntity<CommonResponse> createTask(@RequestParam("files") MultipartFile[] files, @RequestParam("task") String task) {
+        log.info("TaskController::createTask task {}", task);
         CommonResponse commonResponse = new CommonResponse();
         try {
-            String response = taskService.createTask(files, taskDTO);
+            String response = taskService.createTask(files, task);
 
             if (!response.equals("success.")) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));
