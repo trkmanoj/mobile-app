@@ -1,5 +1,6 @@
 package com.mnj.mobile.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.AttachmentDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.entity.Task;
@@ -32,17 +33,22 @@ public class TaskServiceImpl implements TaskService {
 
     private ProjectRepository projectRepository;
 
+    private final ObjectMapper objectMapper;
+
     @Value("${application.attachment}")
     private String filePath;
 
-    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository, ObjectMapper objectMapper) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public String createTask(MultipartFile[] files, TaskDTO taskDTO) throws IOException {
+    public String createTask(MultipartFile[] files, String taskStr) throws IOException {
         log.info("TaskServiceImpl:createTask execution started.");
+
+        TaskDTO taskDTO = objectMapper.readValue(taskStr, TaskDTO.class);
 
         List<TaskAttachment> list = new ArrayList<>();
         for (MultipartFile file : files) {

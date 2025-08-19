@@ -1,6 +1,8 @@
 package com.mnj.mobile.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.AttachmentDTO;
+import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Project;
@@ -18,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,17 +32,22 @@ public class ProjectServiceImpl implements ProjectService {
 
     private MemberRepository memberRepository;
 
+    private final ObjectMapper objectMapper;
+
     @Value("${application.attachment}")
     private String filePath;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, MemberRepository memberRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, MemberRepository memberRepository, ObjectMapper objectMapper) {
         this.projectRepository = projectRepository;
         this.memberRepository = memberRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public String createProject(MultipartFile[] files, ProjectDTO projectDTO) throws IOException {
+    public String createProject(MultipartFile[] files, String projectStr) throws IOException {
         log.info("ProjectServiceImpl:createProject execution started.");
+
+        ProjectDTO projectDTO = objectMapper.readValue(projectStr, ProjectDTO.class);
 
         List<Attachment> list = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -62,7 +70,10 @@ public class ProjectServiceImpl implements ProjectService {
             list.add(attachment);
         }
 
-//        Set<UUID> memberIds = projectDTO.getTeamMembers().stream().map(MemberDTO::getId).collect(Collectors.toSet());
+        Set<UUID> memberIds = new HashSet<>();
+        if (projectDTO.getTeamMembers() != null){
+            memberIds = projectDTO.getTeamMembers().stream().map(MemberDTO::getId).collect(Collectors.toSet());
+        }
 
         Project project = new Project(
                 projectDTO.getProjectId(),
@@ -73,9 +84,9 @@ public class ProjectServiceImpl implements ProjectService {
                 list,
                 projectDTO.getProjectStatus(),
                 projectDTO.isStatus(),
-                projectDTO.getCreatedDate(),
-                projectDTO.getModifiedDate()
-//                new HashSet<>(memberRepository.findAllById(memberIds))
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
         );
 
         projectRepository.save(project);
@@ -95,15 +106,15 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getStartDate(),
                 project.getEndDate(),
                 project.getTeam(),
-//                project.getMembers().stream().map(member ->
-//                        new MemberDTO(
-//                                member.getId(),
-//                                member.getName(),
-//                                member.getEmail(),
-//                                member.getMobile(),
-//                                member.getTeam(),
-//                                member.isStatus()
-//                        )).collect(Collectors.toSet()),
+                project.getMembers().stream().map(member ->
+                        new MemberDTO(
+                                member.getId(),
+                                member.getName(),
+                                member.getEmail(),
+                                member.getMobile(),
+                                member.getTeam(),
+                                member.isStatus()
+                        )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(attachment ->
                         new AttachmentDTO(
                                 attachment.getId(),
@@ -133,15 +144,15 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getStartDate(),
                 project.getEndDate(),
                 project.getTeam(),
-//                project.getMembers().stream().map(member ->
-//                        new MemberDTO(
-//                                member.getId(),
-//                                member.getName(),
-//                                member.getEmail(),
-//                                member.getMobile(),
-//                                member.getTeam(),
-//                                member.isStatus()
-//                        )).collect(Collectors.toSet()),
+                project.getMembers().stream().map(member ->
+                        new MemberDTO(
+                                member.getId(),
+                                member.getName(),
+                                member.getEmail(),
+                                member.getMobile(),
+                                member.getTeam(),
+                                member.isStatus()
+                        )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(
                         attachment -> new AttachmentDTO(
                                 attachment.getId(),

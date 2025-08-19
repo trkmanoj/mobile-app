@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface TaskService {
-    String createTask(MultipartFile[] files, TaskDTO taskDTO) throws IOException;
+    String createTask(MultipartFile[] files, String task) throws IOException;
 
     List<TaskDTO> findByProject(String projectId);
 }

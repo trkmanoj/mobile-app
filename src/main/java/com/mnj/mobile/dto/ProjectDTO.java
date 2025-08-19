@@ -1,6 +1,8 @@
 package com.mnj.mobile.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mnj.mobile.enums.Status;
+import com.mnj.mobile.enums.Team;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,8 +23,8 @@ public class ProjectDTO {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String team;
-//    private Set<MemberDTO> teamMembers;
+    private Team team;
+    private Set<MemberDTO> teamMembers;
     private List<AttachmentDTO> attachments;
     private Status projectStatus;
     private boolean status;

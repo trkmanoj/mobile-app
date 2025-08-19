@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProjectService {
-    String createProject(MultipartFile[] files, ProjectDTO project) throws IOException;
+    String createProject(MultipartFile[] files, String project) throws IOException;
 
     ProjectDTO findById(String projectId);
 

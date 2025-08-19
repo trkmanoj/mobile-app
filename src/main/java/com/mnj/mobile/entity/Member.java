@@ -32,15 +32,15 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Team team;
     private boolean status = true;
-//    @ManyToMany(mappedBy = "members")
-//    private Set<Project> projects = new HashSet<>();
+    @ManyToMany(mappedBy = "members")
+    private Set<Project> projects = new HashSet<>();
 
-//    public Member(UUID id, String name, String email, String mobile, Team team, boolean status) {
-//        this.id = id;
-//        this.name = name;
-//        this.email = email;
-//        this.mobile = mobile;
-//        this.team = team;
-//        this.status = status;
-//    }
+    public Member(UUID id, String name, String email, String mobile, Team team, boolean status) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.mobile = mobile;
+        this.team = team;
+        this.status = status;
+    }
 }

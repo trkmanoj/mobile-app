@@ -32,20 +32,15 @@ public class ProjectController {
     }
     @PostMapping("/save")
     public ResponseEntity<CommonResponse> createProject(
-            @RequestParam("files") MultipartFile[] files,
+            @RequestParam(value = "files", required = false) MultipartFile[] files,
             @RequestParam("project") String project) {
 
         log.info("ProjectController::createProject projectJson {}", project);
 
         CommonResponse commonResponse = new CommonResponse();
         try {
-            // Convert JSON string to ProjectDTO
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule()); // important
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            ProjectDTO projectO = mapper.readValue(project, ProjectDTO.class);
 
-            String response = projectService.createProject(files, projectO);
+            String response = projectService.createProject(files, project);
 
             if (!"success.".equals(response)) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed! Please try again"));
