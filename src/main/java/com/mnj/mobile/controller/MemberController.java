@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,11 +23,12 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse> createMember(@RequestBody MemberDTO dto) {
-        log.info("MemberController::createMember dto {}", dto);
+    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "file", required = false) MultipartFile file,
+                                                       @RequestParam("project") String member) {
+        log.info("MemberController::createMember dto {}", member);
         CommonResponse commonResponse = new CommonResponse();
         try {
-            String response = memberService.createMember(dto);
+            String response = memberService.createMember(file, member);
 
             if (!response.equals("success.")) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));
