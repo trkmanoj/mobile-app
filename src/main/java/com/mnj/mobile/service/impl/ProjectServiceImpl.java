@@ -113,6 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
                                 member.getEmail(),
                                 member.getMobile(),
                                 member.getTeam(),
+                                member.getDesignation(),
                                 member.isStatus()
                         )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(attachment ->
@@ -151,6 +152,7 @@ public class ProjectServiceImpl implements ProjectService {
                                 member.getEmail(),
                                 member.getMobile(),
                                 member.getTeam(),
+                                member.getDesignation(),
                                 member.isStatus()
                         )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(

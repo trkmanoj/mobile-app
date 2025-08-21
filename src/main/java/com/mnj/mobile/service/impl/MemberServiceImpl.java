@@ -2,6 +2,7 @@ package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mnj.mobile.dto.AttachmentDTO;
 import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Member;
@@ -53,6 +54,14 @@ public class MemberServiceImpl implements MemberService {
         Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+        Member member = getMember(file, filePath, dto);
+
+        memberRepository.save(member);
+        log.info("MemberServiceImpl:createMember execution ended.");
+        return "success.";
+    }
+
+    private static Member getMember(MultipartFile file, Path filePath, MemberDTO dto) {
         MemberImage attachment = new MemberImage(
                 null,
                 file.getOriginalFilename(),
@@ -68,13 +77,11 @@ public class MemberServiceImpl implements MemberService {
                 dto.getEmail(),
                 dto.getMobile(),
                 dto.getTeam(),
+                dto.getDesignation(),
                 dto.isStatus(),
                 attachment
         );
-
-        memberRepository.save(member);
-        log.info("MemberServiceImpl:createMember execution ended.");
-        return "success.";
+        return member;
     }
 
     @Override
@@ -82,14 +89,21 @@ public class MemberServiceImpl implements MemberService {
         log.info("MemberServiceImpl:findAll execution started.");
 
         List<MemberDTO> memberDTOS = memberRepository.findAll().stream()
-                        .map(member -> new MemberDTO(
-                                member.getId(),
-                                member.getName(),
-                                member.getEmail(),
-                                member.getMobile(),
-                                member.getTeam(),
-                                member.isStatus()
-                        )).collect(Collectors.toList());
+                .map(member -> new MemberDTO(
+                        member.getId(),
+                        member.getName(),
+                        member.getEmail(),
+                        member.getMobile(),
+                        member.getTeam(),
+                        member.getDesignation(),
+                        member.isStatus(),
+                        new AttachmentDTO(
+                                member.getImage().getImageId(),
+                                member.getImage().getFileName(),
+                                member.getImage().getFilePath(),
+                                member.getImage().getMimeType(),
+                                member.getImage().getFileSize())
+                )).collect(Collectors.toList());
 
         log.info("MemberServiceImpl:findAll execution ended.");
         return memberDTOS;
