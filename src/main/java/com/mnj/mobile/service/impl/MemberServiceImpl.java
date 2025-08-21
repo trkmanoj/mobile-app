@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,21 +48,20 @@ public class MemberServiceImpl implements MemberService {
 
         MemberDTO dto = objectMapper.readValue(memberStr, MemberDTO.class);
 
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        File directory = new File(filePath);
-        if (!directory.exists()) directory.mkdirs();
+        Path uploadPath = Paths.get(filePath);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
 
-        Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        // Generate unique filename
+        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path targetPath = uploadPath.resolve(filename);
 
-        Member member = getMember(file, filePath, dto);
+        // Best practice: use try-with-resources (auto-close stream)
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
-        memberRepository.save(member);
-        log.info("MemberServiceImpl:createMember execution ended.");
-        return "success.";
-    }
-
-    private static Member getMember(MultipartFile file, Path filePath, MemberDTO dto) {
         MemberImage attachment = new MemberImage(
                 null,
                 file.getOriginalFilename(),
@@ -69,7 +69,6 @@ public class MemberServiceImpl implements MemberService {
                 file.getContentType(),
                 file.getSize()
         );
-
 
         Member member = new Member(
                 dto.getId(),
@@ -81,7 +80,11 @@ public class MemberServiceImpl implements MemberService {
                 dto.isStatus(),
                 attachment
         );
-        return member;
+
+
+        memberRepository.save(member);
+        log.info("MemberServiceImpl:createMember execution ended.");
+        return "success.";
     }
 
     @Override

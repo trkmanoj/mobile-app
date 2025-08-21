@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,12 +52,19 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<Attachment> list = new ArrayList<>();
         for (MultipartFile file : files) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            File directory = new File(filePath);
-            if (!directory.exists()) directory.mkdirs();
+            Path uploadPath = Paths.get(filePath);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
 
-            Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Generate unique filename
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path targetPath = uploadPath.resolve(filename);
+
+            // Best practice: use try-with-resources (auto-close stream)
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
 
             Attachment attachment = new Attachment(
                     null,
