@@ -3,6 +3,7 @@ package com.mnj.mobile.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.AttachmentDTO;
+import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Member;
@@ -21,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,7 +67,7 @@ public class MemberServiceImpl implements MemberService {
         MemberImage attachment = new MemberImage(
                 null,
                 file.getOriginalFilename(),
-                filePath.toString(),
+                targetPath.toString(),
                 file.getContentType(),
                 file.getSize()
         );
@@ -88,10 +90,38 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<MemberDTO> findAll() {
+    public List<MemberDTO> findAll() throws IOException {
         log.info("MemberServiceImpl:findAll execution started.");
 
-        List<MemberDTO> memberDTOS = memberRepository.findAll().stream()
+        List<MemberDTO> memberDTOS = new ArrayList<>();
+        List<Member> members =  memberRepository.findAll();
+        for (Member member : members) {
+
+            CommonAttachmentDTO attachmentDTO = new CommonAttachmentDTO(
+                    null,
+                    null,
+                    member.getImage().getFileName(),
+                    member.getImage().getMimeType(),
+                    member.getImage().getFileSize(),
+                    getImagePathBytes(member.getImage().getFilePath())
+            );
+
+            MemberDTO dto = new MemberDTO(
+                    member.getId(),
+                    member.getName(),
+                    member.getEmail(),
+                    member.getMobile(),
+                    member.getTeam(),
+                    member.getDesignation(),
+                    member.isStatus(),
+                    attachmentDTO
+            );
+
+            memberDTOS.add(dto);
+
+        }
+
+        /*List<MemberDTO> memberDTOS = memberRepository.findAll().stream()
                 .map(member -> new MemberDTO(
                         member.getId(),
                         member.getName(),
@@ -100,15 +130,21 @@ public class MemberServiceImpl implements MemberService {
                         member.getTeam(),
                         member.getDesignation(),
                         member.isStatus(),
-                        new AttachmentDTO(
-                                member.getImage().getImageId(),
+                        new CommonAttachmentDTO(
+                                null,
+                                null,
                                 member.getImage().getFileName(),
-                                member.getImage().getFilePath(),
                                 member.getImage().getMimeType(),
-                                member.getImage().getFileSize())
-                )).collect(Collectors.toList());
+                                member.getImage().getFileSize(),
+                                getImagePathBytes(member.getImage().getFilePath()))
+                )).collect(Collectors.toList());*/
 
         log.info("MemberServiceImpl:findAll execution ended.");
         return memberDTOS;
+    }
+
+    private byte[] getImagePathBytes(String imgUrl) throws IOException {
+        Path targetLocation = Paths.get(imgUrl);
+        return Files.readAllBytes(targetLocation);
     }
 }

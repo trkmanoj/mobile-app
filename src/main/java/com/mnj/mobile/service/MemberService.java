@@ -10,5 +10,5 @@ import java.util.List;
 public interface MemberService {
     String createMember(MultipartFile files, String member) throws IOException;
 
-    List<MemberDTO> findAll();
+    List<MemberDTO> findAll() throws IOException;
 }

@@ -69,7 +69,7 @@ public class ProjectServiceImpl implements ProjectService {
             Attachment attachment = new Attachment(
                     null,
                     file.getOriginalFilename(),
-                    filePath.toString(),
+                    targetPath.toString(),
                     file.getContentType(),
                     file.getSize()
             );

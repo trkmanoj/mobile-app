@@ -70,7 +70,7 @@ public class TaskServiceImpl implements TaskService {
             TaskAttachment attachment = new TaskAttachment(
                     null,
                     file.getOriginalFilename(),
-                    filePath.toString(),
+                    targetPath.toString(),
                     file.getContentType(),
                     file.getSize()
             );

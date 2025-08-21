@@ -19,7 +19,7 @@ public class MemberDTO {
     private Team team;
     private String designation;
     private boolean status;
-    private AttachmentDTO attachment;
+    private CommonAttachmentDTO attachment;
 
     public MemberDTO(UUID id, String name, String email, String mobile, Team team, String designation, boolean status) {
         this.id = id;
