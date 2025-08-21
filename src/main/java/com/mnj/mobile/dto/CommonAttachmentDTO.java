@@ -10,9 +10,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommonAttachmentDTO {
-
-    private UUID id;
-    private String imgUrl;
     private String imageOriginalName;
     private String mimeType;
    private Long fileSize;

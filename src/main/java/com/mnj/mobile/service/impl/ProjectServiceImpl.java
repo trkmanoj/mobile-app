@@ -2,6 +2,7 @@ package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.AttachmentDTO;
+import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -125,12 +127,11 @@ public class ProjectServiceImpl implements ProjectService {
                                 member.isStatus()
                         )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(attachment ->
-                        new AttachmentDTO(
-                                attachment.getId(),
+                        new CommonAttachmentDTO(
                                 attachment.getFileName(),
-                                attachment.getFilePath(),
                                 attachment.getMimeType(),
-                                attachment.getFileSize()
+                                attachment.getFileSize(),
+                                safeGetImagePathBytes(attachment.getFilePath())
                         )).collect(Collectors.toList()),
                 project.getProjectStatus(),
                 project.isStatus(),
@@ -164,12 +165,11 @@ public class ProjectServiceImpl implements ProjectService {
                                 member.isStatus()
                         )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(
-                        attachment -> new AttachmentDTO(
-                                attachment.getId(),
+                        attachment -> new CommonAttachmentDTO(
                                 attachment.getFileName(),
-                                attachment.getFilePath(),
                                 attachment.getMimeType(),
-                                attachment.getFileSize()
+                                attachment.getFileSize(),
+                                safeGetImagePathBytes(attachment.getFilePath())
                         )).collect(Collectors.toList()),
                 project.getProjectStatus(),
                 project.isStatus(),
@@ -179,5 +179,18 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("ProjectServiceImpl:findAll execution ended.");
         return projectDTOS;
+    }
+
+    private byte[] getImagePathBytes(String imgUrl) throws IOException {
+        Path targetLocation = Paths.get(imgUrl);
+        return Files.readAllBytes(targetLocation);
+    }
+
+    private byte[] safeGetImagePathBytes(String imgUrl) {
+        try {
+            return getImagePathBytes(imgUrl);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

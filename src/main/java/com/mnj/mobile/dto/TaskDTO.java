@@ -20,7 +20,7 @@ public class TaskDTO {
     private LocalDate endDate;
     private String team;
     private String project;
-    private List<AttachmentDTO> attachments;
+    private List<CommonAttachmentDTO> attachments;
     private Status taskStatus;
     private boolean status;
     private LocalDateTime createdDate;

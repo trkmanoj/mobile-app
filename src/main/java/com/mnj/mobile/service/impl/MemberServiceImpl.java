@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -90,38 +91,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<MemberDTO> findAll() throws IOException {
+    public List<MemberDTO> findAll() {
         log.info("MemberServiceImpl:findAll execution started.");
 
-        List<MemberDTO> memberDTOS = new ArrayList<>();
-        List<Member> members =  memberRepository.findAll();
-        for (Member member : members) {
-
-            CommonAttachmentDTO attachmentDTO = new CommonAttachmentDTO(
-                    null,
-                    null,
-                    member.getImage().getFileName(),
-                    member.getImage().getMimeType(),
-                    member.getImage().getFileSize(),
-                    getImagePathBytes(member.getImage().getFilePath())
-            );
-
-            MemberDTO dto = new MemberDTO(
-                    member.getId(),
-                    member.getName(),
-                    member.getEmail(),
-                    member.getMobile(),
-                    member.getTeam(),
-                    member.getDesignation(),
-                    member.isStatus(),
-                    attachmentDTO
-            );
-
-            memberDTOS.add(dto);
-
-        }
-
-        /*List<MemberDTO> memberDTOS = memberRepository.findAll().stream()
+        List<MemberDTO> memberDTOS = memberRepository.findAll().stream()
                 .map(member -> new MemberDTO(
                         member.getId(),
                         member.getName(),
@@ -131,13 +104,11 @@ public class MemberServiceImpl implements MemberService {
                         member.getDesignation(),
                         member.isStatus(),
                         new CommonAttachmentDTO(
-                                null,
-                                null,
                                 member.getImage().getFileName(),
                                 member.getImage().getMimeType(),
                                 member.getImage().getFileSize(),
-                                getImagePathBytes(member.getImage().getFilePath()))
-                )).collect(Collectors.toList());*/
+                                safeGetImagePathBytes(member.getImage().getFilePath()))
+                )).collect(Collectors.toList());
 
         log.info("MemberServiceImpl:findAll execution ended.");
         return memberDTOS;
@@ -146,5 +117,13 @@ public class MemberServiceImpl implements MemberService {
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
         Path targetLocation = Paths.get(imgUrl);
         return Files.readAllBytes(targetLocation);
+    }
+
+    private byte[] safeGetImagePathBytes(String imgUrl) {
+        try {
+            return getImagePathBytes(imgUrl);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }
