@@ -70,4 +70,29 @@ public class MemberController {
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<CommonResponse> findMemberByStatus(@PathVariable("status") boolean status){
+        log.info("MemberController::findMemberByStatus status {}", status);
+        CommonResponse commonResponse = new CommonResponse();
+
+        try{
+
+            List<MemberDTO> response = memberService.findMemberByStatus(status);
+
+            if (response.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(response));
+            }
+            log.info("TaskController::findMemberByStatus response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+
+        }catch (Exception ex){
+            log.error("TaskController:findMemberByStatus error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

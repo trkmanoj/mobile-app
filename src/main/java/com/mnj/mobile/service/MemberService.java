@@ -11,4 +11,6 @@ public interface MemberService {
     String createMember(MultipartFile files, String member) throws IOException;
 
     List<MemberDTO> findAll();
+
+    List<MemberDTO> findMemberByStatus(boolean status);
 }
