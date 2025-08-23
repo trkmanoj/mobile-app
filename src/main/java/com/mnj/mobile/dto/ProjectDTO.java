@@ -23,11 +23,23 @@ public class ProjectDTO {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Team team;
-    private Set<MemberDTO> teamMembers;
+//    private Team team;
+//    private Set<MemberDTO> teamMembers;
     private List<CommonAttachmentDTO> attachments;
     private Status projectStatus;
     private boolean status;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+
+    public ProjectDTO(UUID projectId, String name, LocalDate startDate, LocalDate endDate, Status projectStatus, boolean status, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+         this.projectId=projectId;
+         this.name=name;
+         this.startDate=startDate;
+         this.endDate=endDate;
+         this.projectStatus=projectStatus;
+         this.status=status;
+         this.createdDate=createdDate;
+         this.endDate=endDate;
+
+    }
 }

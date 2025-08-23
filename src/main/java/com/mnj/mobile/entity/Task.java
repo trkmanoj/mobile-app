@@ -30,12 +30,12 @@ public class Task {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String team;
+//    private String team;
     @ManyToOne
     @JoinColumn(name = "projectId")
     private Project project;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "projectId",referencedColumnName = "projectId")
+    @JoinColumn(name = "projectId",referencedColumnName = "taskId")
     private List<TaskAttachment> attachments;
     @Enumerated(EnumType.STRING)
     private Status taskStatus = Status.PENDING;

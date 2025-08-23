@@ -1,12 +1,11 @@
 package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mnj.mobile.dto.AttachmentDTO;
 import com.mnj.mobile.dto.CommonAttachmentDTO;
-import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Project;
+import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.repository.MemberRepository;
 import com.mnj.mobile.repository.ProjectRepository;
 import com.mnj.mobile.service.ProjectService;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -47,10 +45,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public String createProject(MultipartFile[] files, String projectStr) throws IOException {
+    public String createProject(MultipartFile[] files, ProjectDTO projectDTO) throws IOException {
         log.info("ProjectServiceImpl:createProject execution started.");
 
-        ProjectDTO projectDTO = objectMapper.readValue(projectStr, ProjectDTO.class);
+//        ProjectDTO projectDTO = objectMapper.readValue(projectStr, ProjectDTO.class);
 
         List<Attachment> list = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -81,22 +79,22 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         Set<UUID> memberIds = new HashSet<>();
-        if (projectDTO.getTeamMembers() != null){
-            memberIds = projectDTO.getTeamMembers().stream().map(MemberDTO::getId).collect(Collectors.toSet());
-        }
+//        if (projectDTO.getTeamMembers() != null){
+//            memberIds = projectDTO.getTeamMembers().stream().map(MemberDTO::getId).collect(Collectors.toSet());
+//        }
 
         Project project = new Project(
                 projectDTO.getProjectId(),
                 projectDTO.getName(),
                 projectDTO.getStartDate(),
                 projectDTO.getEndDate(),
-                projectDTO.getTeam(),
+//                projectDTO.getTeam(),
                 list,
-                projectDTO.getProjectStatus(),
-                projectDTO.isStatus(),
+                Status.PENDING,
+                true,
                 LocalDateTime.now(),
-                LocalDateTime.now(),
-                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
+                LocalDateTime.now()
+//                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
         );
 
         projectRepository.save(project);
@@ -115,17 +113,17 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getName(),
                 project.getStartDate(),
                 project.getEndDate(),
-                project.getTeam(),
-                project.getMembers().stream().map(member ->
-                        new MemberDTO(
-                                member.getId(),
-                                member.getName(),
-                                member.getEmail(),
-                                member.getMobile(),
-                                member.getTeam(),
-                                member.getDesignation(),
-                                member.isStatus()
-                        )).collect(Collectors.toSet()),
+//                project.getTeam(),
+//                project.getMembers().stream().map(member ->
+//                        new MemberDTO(
+//                                member.getId(),
+//                                member.getName(),
+//                                member.getEmail(),
+//                                member.getMobile(),
+//                                member.getTeam(),
+//                                member.getDesignation(),
+//                                member.isStatus()
+//                        )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(attachment ->
                         new CommonAttachmentDTO(
                                 attachment.getFileName(),
@@ -133,7 +131,7 @@ public class ProjectServiceImpl implements ProjectService {
                                 attachment.getFileSize(),
                                 safeGetImagePathBytes(attachment.getFilePath())
                         )).collect(Collectors.toList()),
-                project.getProjectStatus(),
+                Status.PENDING,
                 project.isStatus(),
                 project.getCreatedDate(),
                 project.getModifiedDate()
@@ -153,17 +151,17 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getName(),
                 project.getStartDate(),
                 project.getEndDate(),
-                project.getTeam(),
-                project.getMembers().stream().map(member ->
-                        new MemberDTO(
-                                member.getId(),
-                                member.getName(),
-                                member.getEmail(),
-                                member.getMobile(),
-                                member.getTeam(),
-                                member.getDesignation(),
-                                member.isStatus()
-                        )).collect(Collectors.toSet()),
+//                project.getTeam(),
+//                project.getMembers().stream().map(member ->
+//                        new MemberDTO(
+//                                member.getId(),
+//                                member.getName(),
+//                                member.getEmail(),
+//                                member.getMobile(),
+//                                member.getTeam(),
+//                                member.getDesignation(),
+//                                member.isStatus()
+//                        )).collect(Collectors.toSet()),
                 project.getAttachments().stream().map(
                         attachment -> new CommonAttachmentDTO(
                                 attachment.getFileName(),
@@ -176,6 +174,29 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getCreatedDate(),
                 project.getModifiedDate()
         )).collect(Collectors.toList());
+
+        log.info("ProjectServiceImpl:findAll execution ended.");
+        return projectDTOS;
+    }
+
+    @Override
+    public List<ProjectDTO> findActiveAll(String status) {
+        log.info("ProjectServiceImpl:findAll execution started.");
+       Status projectStatus = Status.valueOf(status.toUpperCase());
+        List<Project> projects = projectRepository.findByStatusTrueAndProjectStatus(projectStatus);
+        List<ProjectDTO> projectDTOS = projects.stream()
+                .sorted(Comparator.comparing(Project::getModifiedDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .map(project -> new ProjectDTO(
+                        project.getProjectId(),
+                        project.getName(),
+                        project.getStartDate(),
+                        project.getEndDate(),
+                        project.getProjectStatus(),
+                        project.isStatus(),
+                        project.getCreatedDate(),
+                        project.getModifiedDate()
+                ))
+                .collect(Collectors.toList());
 
         log.info("ProjectServiceImpl:findAll execution ended.");
         return projectDTOS;

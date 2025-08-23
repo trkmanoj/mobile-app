@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "member")
@@ -33,8 +33,8 @@ public class Member {
     private Team team;
     private String designation;
     private boolean status = true;
-    @ManyToMany(mappedBy = "members")
-    private Set<Project> projects = new HashSet<>();
+//    @ManyToMany(mappedBy = "members")
+//    private Set<Project> projects = new HashSet<>();
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id", referencedColumnName = "imageId")
     private MemberImage image;

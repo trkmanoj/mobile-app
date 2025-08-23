@@ -1,7 +1,6 @@
 package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mnj.mobile.dto.AttachmentDTO;
 import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.entity.Task;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -48,10 +46,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public String createTask(MultipartFile[] files, String taskStr) throws IOException {
+    public String createTask(MultipartFile[] files, TaskDTO taskDTO) throws IOException {
         log.info("TaskServiceImpl:createTask execution started.");
 
-        TaskDTO taskDTO = objectMapper.readValue(taskStr, TaskDTO.class);
+//        TaskDTO taskDTO = objectMapper.readValue(taskStr, TaskDTO.class);
 
         List<TaskAttachment> list = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -86,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
                 taskDTO.getName(),
                 taskDTO.getStartDate(),
                 taskDTO.getEndDate(),
-                taskDTO.getTeam(),
+//                taskDTO.getTeam(),
                 projectRepository.findById(UUID.fromString(taskDTO.getProject())).get(),
                 list,
                 taskDTO.getTaskStatus(),
@@ -111,7 +109,7 @@ public class TaskServiceImpl implements TaskService {
                 task.getName(),
                 task.getStartDate(),
                 task.getEndDate(),
-                task.getTeam(),
+//                task.getTeam(),
                 task.getProject().getProjectId().toString(),
                 task.getAttachments().stream()
                         .map(attachment ->

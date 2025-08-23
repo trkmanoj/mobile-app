@@ -1,5 +1,6 @@
 package com.mnj.mobile.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -33,14 +34,18 @@ public class ProjectController {
     @PostMapping("/save")
     public ResponseEntity<CommonResponse> createProject(
             @RequestParam(value = "files", required = false) MultipartFile[] files,
-            @RequestParam("project") String project) {
+            @RequestParam("project") String project) throws JsonProcessingException {
 
         log.info("ProjectController::createProject projectJson {}", project);
 
         CommonResponse commonResponse = new CommonResponse();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        ProjectDTO projectO = mapper.readValue(project, ProjectDTO.class);
         try {
 
-            String response = projectService.createProject(files, project);
+            String response = projectService.createProject(files, projectO);
 
             if (!"success.".equals(response)) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed! Please try again"));
@@ -84,7 +89,7 @@ public class ProjectController {
         }
     }
 
-    @GetMapping()
+    @GetMapping("/")
     public ResponseEntity<CommonResponse> findAll() {
         log.info("ProjectController::findAll");
         CommonResponse commonResponse = new CommonResponse();
@@ -105,5 +110,28 @@ public class ProjectController {
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/active/{status}")
+    public ResponseEntity<CommonResponse> findActiveAll(@PathVariable("status") String status) {
+        log.info("ProjectController::findAllActive");
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            List<ProjectDTO> response = projectService.findActiveAll(status);
+
+            if (response.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not Found Records."));
+                commonResponse.setStatus(CommonConst.NOT_FOUND_RECORD);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(response));
+            }
+            log.info("ProjectController::findAll response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("ProjectController:findAll error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }
