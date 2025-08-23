@@ -2,6 +2,7 @@ package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.AttachmentDTO;
+import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.entity.TaskAttachment;
@@ -15,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,17 +55,24 @@ public class TaskServiceImpl implements TaskService {
 
         List<TaskAttachment> list = new ArrayList<>();
         for (MultipartFile file : files) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            File directory = new File(filePath);
-            if (!directory.exists()) directory.mkdirs();
+            Path uploadPath = Paths.get(filePath);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
 
-            Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Generate unique filename
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path targetPath = uploadPath.resolve(filename);
+
+            // Best practice: use try-with-resources (auto-close stream)
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
 
             TaskAttachment attachment = new TaskAttachment(
                     null,
                     file.getOriginalFilename(),
-                    filePath.toString(),
+                    targetPath.toString(),
                     file.getContentType(),
                     file.getSize()
             );
@@ -103,13 +113,14 @@ public class TaskServiceImpl implements TaskService {
                 task.getEndDate(),
                 task.getTeam(),
                 task.getProject().getProjectId().toString(),
-                task.getAttachments().stream().map(attachment -> new AttachmentDTO(
-                        attachment.getId(),
-                        attachment.getFileName(),
-                        attachment.getFilePath(),
-                        attachment.getMimeType(),
-                        attachment.getFileSize()
-                )).collect(Collectors.toList()),
+                task.getAttachments().stream()
+                        .map(attachment ->
+                                new CommonAttachmentDTO(
+                                        attachment.getFileName(),
+                                        attachment.getMimeType(),
+                                        attachment.getFileSize(),
+                                        safeGetImagePathBytes(attachment.getFilePath())
+                                )).collect(Collectors.toList()),
                 task.getTaskStatus(),
                 task.isStatus(),
                 task.getCreatedDate(),
@@ -118,5 +129,18 @@ public class TaskServiceImpl implements TaskService {
 
         log.info("TaskServiceImpl:findByProject execution started.");
         return taskDTOS;
+    }
+
+    private byte[] getImagePathBytes(String imgUrl) throws IOException {
+        Path targetLocation = Paths.get(imgUrl);
+        return Files.readAllBytes(targetLocation);
+    }
+
+    private byte[] safeGetImagePathBytes(String imgUrl) {
+        try {
+            return getImagePathBytes(imgUrl);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

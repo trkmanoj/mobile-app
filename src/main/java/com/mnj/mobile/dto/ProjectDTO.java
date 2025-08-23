@@ -25,7 +25,7 @@ public class ProjectDTO {
     private LocalDate endDate;
     private Team team;
     private Set<MemberDTO> teamMembers;
-    private List<AttachmentDTO> attachments;
+    private List<CommonAttachmentDTO> attachments;
     private Status projectStatus;
     private boolean status;
     private LocalDateTime createdDate;

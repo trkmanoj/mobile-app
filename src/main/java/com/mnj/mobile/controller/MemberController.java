@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,11 +23,12 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse> createMember(@RequestBody MemberDTO dto) {
-        log.info("MemberController::createMember dto {}", dto);
+    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "file", required = false) MultipartFile file,
+                                                       @RequestParam("member") String member) {
+        log.info("MemberController::createMember dto {}", member);
         CommonResponse commonResponse = new CommonResponse();
         try {
-            String response = memberService.createMember(dto);
+            String response = memberService.createMember(file, member);
 
             if (!response.equals("success.")) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));
@@ -65,6 +67,31 @@ public class MemberController {
 
         }catch (Exception ex){
             log.error("TaskController:findAll error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<CommonResponse> findMemberByStatus(@PathVariable("status") boolean status){
+        log.info("MemberController::findMemberByStatus status {}", status);
+        CommonResponse commonResponse = new CommonResponse();
+
+        try{
+
+            List<MemberDTO> response = memberService.findMemberByStatus(status);
+
+            if (response.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(response));
+            }
+            log.info("TaskController::findMemberByStatus response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+
+        }catch (Exception ex){
+            log.error("TaskController:findMemberByStatus error {}", ex.getMessage());
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
