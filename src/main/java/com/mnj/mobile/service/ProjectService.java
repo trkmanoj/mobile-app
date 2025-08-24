@@ -14,4 +14,8 @@ public interface ProjectService {
     List<ProjectDTO> findAll();
 
     List<ProjectDTO> findActiveAll(String status);
+
+    boolean updateProjectStatus(String id, String status);
+
+
 }

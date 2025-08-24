@@ -202,6 +202,20 @@ public class ProjectServiceImpl implements ProjectService {
         return projectDTOS;
     }
 
+    @Override
+    public boolean updateProjectStatus( String projectId, String status) {
+        try {
+
+            int updatedRows = projectRepository.updateProjectStatusById(projectId, status);
+
+            log.info("Number of rows updated: {}", updatedRows);
+            return updatedRows > 0;
+        } catch (Exception ex) {
+            log.error("Exception while updating project status", ex);
+            return false;
+        }
+    }
+
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
         Path targetLocation = Paths.get(imgUrl);
         return Files.readAllBytes(targetLocation);

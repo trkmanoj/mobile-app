@@ -132,6 +132,31 @@ public class ProjectController {
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PutMapping("/updateStatus/{id}/{status}")
+    public ResponseEntity<CommonResponse> updateStatus(@PathVariable("id") String id,@PathVariable("status") String status) {
+        log.info("ProjectController::updateStatus status={}", status);
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            // Example: call your service to update status
+            boolean updated = projectService.updateProjectStatus(id,status);
+
+            if (updated) {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+//                commonResponse.setPayload("Project status updated to: " + status);
+            } else {
+                commonResponse.setStatus(CommonConst.NOT_FOUND_RECORD);
+                commonResponse.setErrorMessages(
+                        Collections.singletonList("Project status update failed"));
+            }
+        } catch (Exception ex) {
+            log.error("Error updating status", ex);
+            commonResponse.setStatus(CommonConst.INTERNAL_SERVER_ERROR);
+            commonResponse.setErrorMessages(
+                    Collections.singletonList("Exception: " + ex.getMessage()));
+        }
+
+        return ResponseEntity.ok(commonResponse);
+    }
 
 
 }
