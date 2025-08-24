@@ -18,17 +18,18 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/member")
+@CrossOrigin("*")
 public class MemberController {
 
     private MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "files", required = false) MultipartFile[] file,
                                                        @RequestParam("member") String member) {
         log.info("MemberController::createMember dto {}", member);
         CommonResponse commonResponse = new CommonResponse();
         try {
-            String response = memberService.createMember(file, member);
+            String response = memberService.createMember(file[0], member);
 
             if (!response.equals("success.")) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));
