@@ -1,5 +1,10 @@
 package com.mnj.mobile.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.service.TaskService;
 import com.mnj.mobile.util.CommonConst;
@@ -18,16 +23,22 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/task")
+@CrossOrigin("*")
 public class TaskController {
 
     private TaskService taskService;
 
-    @PostMapping
-    public ResponseEntity<CommonResponse> createTask(@RequestParam("files") MultipartFile[] files, @RequestParam("task") String task) {
+    @PostMapping("/save")
+    public ResponseEntity<CommonResponse> createTask(@RequestParam(value = "files",required = false) MultipartFile[] files, @RequestParam("task") String task) throws JsonProcessingException {
         log.info("TaskController::createTask task {}", task);
         CommonResponse commonResponse = new CommonResponse();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        TaskDTO projectO = mapper.readValue(task, TaskDTO.class);
         try {
-            String response = taskService.createTask(files, task);
+            String response = taskService.createTask(files, projectO);
 
             if (!response.equals("success.")) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));

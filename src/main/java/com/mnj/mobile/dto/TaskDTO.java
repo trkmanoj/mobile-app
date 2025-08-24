@@ -18,7 +18,7 @@ public class TaskDTO {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String team;
+//    private String team;
     private String project;
     private List<CommonAttachmentDTO> attachments;
     private Status taskStatus;

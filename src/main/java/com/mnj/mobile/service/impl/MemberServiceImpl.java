@@ -114,6 +114,30 @@ public class MemberServiceImpl implements MemberService {
         return memberDTOS;
     }
 
+    @Override
+    public List<MemberDTO> findMemberByStatus(boolean status) {
+        log.info("MemberServiceImpl:findMemberByStatus execution ended.");
+
+        List<MemberDTO> memberDTOS = memberRepository.findByStatus(status).stream()
+                .map(member -> new MemberDTO(
+                        member.getId(),
+                        member.getName(),
+                        member.getEmail(),
+                        member.getMobile(),
+                        member.getTeam(),
+                        member.getDesignation(),
+                        member.isStatus(),
+                        new CommonAttachmentDTO(
+                                member.getImage().getFileName(),
+                                member.getImage().getMimeType(),
+                                member.getImage().getFileSize(),
+                                safeGetImagePathBytes(member.getImage().getFilePath()))
+                )).collect(Collectors.toList());
+
+        log.info("MemberServiceImpl:findMemberByStatus execution ended.");
+        return memberDTOS;
+    }
+
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
         Path targetLocation = Paths.get(imgUrl);
         return Files.readAllBytes(targetLocation);
