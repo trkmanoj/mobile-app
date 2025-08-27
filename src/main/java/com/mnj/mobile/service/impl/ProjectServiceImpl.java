@@ -5,9 +5,11 @@ import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Project;
+import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.repository.MemberRepository;
 import com.mnj.mobile.repository.ProjectRepository;
+import com.mnj.mobile.repository.TaskRepository;
 import com.mnj.mobile.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,14 +35,17 @@ public class ProjectServiceImpl implements ProjectService {
 
     private MemberRepository memberRepository;
 
+    private TaskRepository taskRepository;
+
     private final ObjectMapper objectMapper;
 
     @Value("${application.attachment}")
     private String filePath;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, MemberRepository memberRepository, ObjectMapper objectMapper) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, MemberRepository memberRepository, TaskRepository taskRepository, ObjectMapper objectMapper) {
         this.projectRepository = projectRepository;
         this.memberRepository = memberRepository;
+        this.taskRepository = taskRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -186,20 +191,27 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDTO> findActiveAll(String status) {
         log.info("ProjectServiceImpl:findAll execution started.");
-       Status projectStatus = Status.valueOf(status.toUpperCase());
+        Status projectStatus = Status.valueOf(status.toUpperCase());
         List<Project> projects = projectRepository.findByStatusTrueAndProjectStatus(projectStatus);
         List<ProjectDTO> projectDTOS = projects.stream()
                 .sorted(Comparator.comparing(Project::getModifiedDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-                .map(project -> new ProjectDTO(
-                        project.getProjectId(),
-                        project.getName(),
-                        project.getStartDate(),
-                        project.getEndDate(),
-                        project.getProjectStatus(),
-                        project.isStatus(),
-                        project.getCreatedDate(),
-                        project.getModifiedDate()
-                ))
+                .map(project ->
+                {
+                    List<Task> tasks = taskRepository.findByProjectProjectId(project.getProjectId());
+
+                    return new ProjectDTO(
+                            project.getProjectId(),
+                            project.getName(),
+                            project.getStartDate(),
+                            project.getEndDate(),
+                            project.getProjectStatus(),
+                            project.isStatus(),
+                            project.getCreatedDate(),
+                            project.getModifiedDate(),
+                            tasks.stream()
+                                    .collect(Collectors.groupingBy(Task::getTaskStatus, Collectors.counting()))
+                    );
+                })
                 .collect(Collectors.toList());
 
         log.info("ProjectServiceImpl:findAll execution ended.");

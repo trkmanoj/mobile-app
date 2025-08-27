@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -30,8 +27,22 @@ public class ProjectDTO {
     private boolean status;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private Map<Status, Long> taskCount;
 
-    public ProjectDTO(UUID projectId, String name, LocalDate startDate, LocalDate endDate, Status projectStatus, boolean status, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    // add team and members to this constructor
+    public ProjectDTO(UUID projectId, String name, LocalDate startDate, LocalDate endDate, List<CommonAttachmentDTO> attachments, Status projectStatus, boolean status, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+        this.projectId = projectId;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.attachments = attachments;
+        this.projectStatus = projectStatus;
+        this.status = status;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
+
+    public ProjectDTO(UUID projectId, String name, LocalDate startDate, LocalDate endDate, Status projectStatus, boolean status, LocalDateTime createdDate, LocalDateTime modifiedDate, Map<Status, Long> taskCount) {
          this.projectId=projectId;
          this.name=name;
          this.startDate=startDate;
@@ -39,7 +50,8 @@ public class ProjectDTO {
          this.projectStatus=projectStatus;
          this.status=status;
          this.createdDate=createdDate;
-         this.endDate=endDate;
+         this.modifiedDate=modifiedDate;
+         this.taskCount = taskCount;
 
     }
 }
