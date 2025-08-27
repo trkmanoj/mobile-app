@@ -51,6 +51,8 @@ public class ProjectServiceImpl implements ProjectService {
 //        ProjectDTO projectDTO = objectMapper.readValue(projectStr, ProjectDTO.class);
 
         List<Attachment> list = new ArrayList<>();
+        if (files != null && files.length > 0) {
+
         for (MultipartFile file : files) {
             Path uploadPath = Paths.get(filePath);
             if (!Files.exists(uploadPath)) {
@@ -77,12 +79,12 @@ public class ProjectServiceImpl implements ProjectService {
 
             list.add(attachment);
         }
-
+        }
         Set<UUID> memberIds = new HashSet<>();
 //        if (projectDTO.getTeamMembers() != null){
 //            memberIds = projectDTO.getTeamMembers().stream().map(MemberDTO::getId).collect(Collectors.toSet());
 //        }
-
+   Status status=projectDTO.getProjectStatus();
         Project project = new Project(
                 projectDTO.getProjectId(),
                 projectDTO.getName(),
@@ -90,8 +92,8 @@ public class ProjectServiceImpl implements ProjectService {
                 projectDTO.getEndDate(),
 //                projectDTO.getTeam(),
                 list,
-                Status.PENDING,
-                true,
+                status,
+                projectDTO.isStatus(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
 //                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
@@ -129,7 +131,8 @@ public class ProjectServiceImpl implements ProjectService {
                                 attachment.getFileName(),
                                 attachment.getMimeType(),
                                 attachment.getFileSize(),
-                                safeGetImagePathBytes(attachment.getFilePath())
+                                safeGetImagePathBytes(attachment.getFilePath()),
+                                attachment.getFilePath()
                         )).collect(Collectors.toList()),
                 Status.PENDING,
                 project.isStatus(),
@@ -167,7 +170,8 @@ public class ProjectServiceImpl implements ProjectService {
                                 attachment.getFileName(),
                                 attachment.getMimeType(),
                                 attachment.getFileSize(),
-                                safeGetImagePathBytes(attachment.getFilePath())
+                                safeGetImagePathBytes(attachment.getFilePath()),
+                                attachment.getFilePath()
                         )).collect(Collectors.toList()),
                 project.getProjectStatus(),
                 project.isStatus(),
@@ -205,8 +209,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public boolean updateProjectStatus( String projectId, String status) {
         try {
-
-            int updatedRows = projectRepository.updateProjectStatusById(projectId, status);
+            Status status1=Status.valueOf(status.toUpperCase());
+            int updatedRows = projectRepository.updateProjectStatusById(UUID.fromString(projectId), status1);
 
             log.info("Number of rows updated: {}", updatedRows);
             return updatedRows > 0;

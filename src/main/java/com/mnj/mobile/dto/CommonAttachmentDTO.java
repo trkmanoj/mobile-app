@@ -14,4 +14,5 @@ public class CommonAttachmentDTO {
     private String mimeType;
    private Long fileSize;
     private byte[] data;
+    private String filePath;
 }

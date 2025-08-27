@@ -117,7 +117,8 @@ public class TaskServiceImpl implements TaskService {
                                         attachment.getFileName(),
                                         attachment.getMimeType(),
                                         attachment.getFileSize(),
-                                        safeGetImagePathBytes(attachment.getFilePath())
+                                        safeGetImagePathBytes(attachment.getFilePath()),
+                                        attachment.getFilePath()
                                 )).collect(Collectors.toList()),
                 task.getTaskStatus(),
                 task.isStatus(),
