@@ -21,7 +21,7 @@ public class ProjectDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 //    private Team team;
-//    private Set<MemberDTO> teamMembers;
+    private Set<UUID> teamMembers;
     private List<CommonAttachmentDTO> attachments;
     private Status projectStatus;
     private boolean status;

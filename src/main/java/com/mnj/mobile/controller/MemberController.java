@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/member")
+@CrossOrigin("*")
 public class MemberController {
 
     private MemberService memberService;

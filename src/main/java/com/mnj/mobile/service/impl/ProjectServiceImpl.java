@@ -2,6 +2,7 @@ package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.CommonAttachmentDTO;
+import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Project;
@@ -86,8 +87,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
         }
         Set<UUID> memberIds = new HashSet<>();
+        memberIds=projectDTO.getTeamMembers();
 //        if (projectDTO.getTeamMembers() != null){
-//            memberIds = projectDTO.getTeamMembers().stream().map(MemberDTO::getId).collect(Collectors.toSet());
+//            memberIds = projectDTO.getTeamMembers().stream().collect(Collectors.toSet());
 //        }
    Status status=projectDTO.getProjectStatus();
         Project project = new Project(
@@ -100,8 +102,8 @@ public class ProjectServiceImpl implements ProjectService {
                 status,
                 projectDTO.isStatus(),
                 LocalDateTime.now(),
-                LocalDateTime.now()
-//                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
+                LocalDateTime.now(),
+                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
         );
 
         projectRepository.save(project);

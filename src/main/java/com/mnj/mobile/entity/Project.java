@@ -41,12 +41,12 @@ public class Project {
     private boolean status = true;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-//    @ManyToMany
-//    @JoinTable(
-//            name = "project_members",
-//            joinColumns = @JoinColumn(name = "project_id"),
-//            inverseJoinColumns = @JoinColumn(name = "member_id")
-//    )
-//    private Set<Member> members = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "project_members",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private Set<Member> members = new HashSet<>();
 
 }
