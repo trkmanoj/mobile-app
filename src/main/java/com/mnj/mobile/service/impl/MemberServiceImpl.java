@@ -107,7 +107,8 @@ public class MemberServiceImpl implements MemberService {
                                 member.getImage().getFileName(),
                                 member.getImage().getMimeType(),
                                 member.getImage().getFileSize(),
-                                safeGetImagePathBytes(member.getImage().getFilePath()))
+                                safeGetImagePathBytes(member.getImage().getFilePath()),
+                                member.getImage().getFilePath())
                 )).collect(Collectors.toList());
 
         log.info("MemberServiceImpl:findAll execution ended.");
@@ -131,7 +132,8 @@ public class MemberServiceImpl implements MemberService {
                                 member.getImage().getFileName(),
                                 member.getImage().getMimeType(),
                                 member.getImage().getFileSize(),
-                                safeGetImagePathBytes(member.getImage().getFilePath()))
+                                safeGetImagePathBytes(member.getImage().getFilePath()),
+                                member.getImage().getFilePath())
                 )).collect(Collectors.toList());
 
         log.info("MemberServiceImpl:findMemberByStatus execution ended.");

@@ -19,5 +19,5 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
     @Modifying
     @Transactional
     @Query("UPDATE Project p SET p.projectStatus = :status WHERE p.id = :projectId")
-    int updateProjectStatusById(String projectId, String status);
+    int updateProjectStatusById(UUID projectId, Status status);
 }
