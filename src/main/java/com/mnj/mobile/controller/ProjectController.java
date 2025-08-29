@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mnj.mobile.dto.ProjectDTO;
+import com.mnj.mobile.dto.ProjectResponseDTO;
 import com.mnj.mobile.service.ProjectService;
 import com.mnj.mobile.util.CommonConst;
 import com.mnj.mobile.util.CommonResponse;
@@ -64,15 +65,12 @@ public class ProjectController {
         }
     }
 
-
-
-
     @GetMapping("/{projectId}")
     public ResponseEntity<CommonResponse> findProjectById(@PathVariable("projectId") String projectId) {
         log.info("ProjectController::findProjectById projectId {}", projectId);
         CommonResponse commonResponse = new CommonResponse();
         try {
-            ProjectDTO response = projectService.findById(projectId);
+            ProjectResponseDTO response = projectService.findById(projectId);
 
             if (response == null) {
                 commonResponse.setErrorMessages(Collections.singletonList("Not Found Records."));

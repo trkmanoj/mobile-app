@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.ProjectDTO;
+import com.mnj.mobile.dto.ProjectResponseDTO;
 import com.mnj.mobile.entity.Attachment;
 import com.mnj.mobile.entity.Project;
 import com.mnj.mobile.entity.Task;
@@ -112,27 +113,27 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO findById(String projectId) {
+    public ProjectResponseDTO findById(String projectId) {
         log.info("ProjectServiceImpl:findById execution started.");
 
         Project project = projectRepository.findById(UUID.fromString(projectId)).get();
 
-        ProjectDTO projectDTO = new ProjectDTO(
+        ProjectResponseDTO projectDTO = new ProjectResponseDTO(
                 project.getProjectId(),
                 project.getName(),
                 project.getStartDate(),
                 project.getEndDate(),
-//                project.getTeam(),
-//                project.getMembers().stream().map(member ->
-//                        new MemberDTO(
-//                                member.getId(),
-//                                member.getName(),
-//                                member.getEmail(),
-//                                member.getMobile(),
-//                                member.getTeam(),
-//                                member.getDesignation(),
-//                                member.isStatus()
-//                        )).collect(Collectors.toSet()),
+                project.getMembers().stream()
+                        .map(member -> new MemberDTO(
+                                member.getId(),
+                                member.getName(),
+                                member.getEmail(),
+                                member.getMobile(),
+                                member.getTeam(),
+                                member.getDesignation(),
+                                member.isStatus()
+                        ))
+                        .collect(Collectors.toList()),
                 project.getAttachments().stream().map(attachment ->
                         new CommonAttachmentDTO(
                                 attachment.getFileName(),
