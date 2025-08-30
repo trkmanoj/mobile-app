@@ -116,13 +116,16 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponseDTO findById(String projectId) {
         log.info("ProjectServiceImpl:findById execution started.");
 
-        Project project = projectRepository.findById(UUID.fromString(projectId)).get();
+        Project project = projectRepository.findById(UUID.fromString(projectId))
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
         ProjectResponseDTO projectDTO = new ProjectResponseDTO(
                 project.getProjectId(),
                 project.getName(),
                 project.getStartDate(),
                 project.getEndDate(),
+
+                // ✅ Members mapping with attachment (image)
                 project.getMembers().stream()
                         .map(member -> new MemberDTO(
                                 member.getId(),
@@ -131,22 +134,35 @@ public class ProjectServiceImpl implements ProjectService {
                                 member.getMobile(),
                                 member.getTeam(),
                                 member.getDesignation(),
-                                member.isStatus()
+                                member.isStatus(),
+                                member.getImage() != null ? new CommonAttachmentDTO(
+                                        member.getImage().getFileName(),
+                                        member.getImage().getMimeType(),
+                                        member.getImage().getFileSize(),
+                                        safeGetImagePathBytes(member.getImage().getFilePath()),
+                                        member.getImage().getFilePath()
+                                ) : null
                         ))
                         .collect(Collectors.toList()),
-                project.getAttachments().stream().map(attachment ->
-                        new CommonAttachmentDTO(
+
+                // ✅ Project attachments mapping
+                project.getAttachments().stream()
+                        .map(attachment -> new CommonAttachmentDTO(
                                 attachment.getFileName(),
                                 attachment.getMimeType(),
                                 attachment.getFileSize(),
                                 safeGetImagePathBytes(attachment.getFilePath()),
                                 attachment.getFilePath()
-                        )).collect(Collectors.toList()),
-                Status.PENDING,
+                        ))
+                        .collect(Collectors.toList()),
+
+                Status.PENDING,  // Or use project.getProjectStatus() if stored in DB
                 project.isStatus(),
                 project.getCreatedDate(),
                 project.getModifiedDate()
         );
+
+
 
         log.info("ProjectServiceImpl:findById execution ended.");
         return projectDTO;

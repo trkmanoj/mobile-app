@@ -24,7 +24,7 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "files", required = false) MultipartFile file,
                                                        @RequestParam("member") String member) {
         log.info("MemberController::createMember dto {}", member);
         CommonResponse commonResponse = new CommonResponse();
