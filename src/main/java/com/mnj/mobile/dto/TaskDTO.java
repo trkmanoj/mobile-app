@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,7 +19,7 @@ public class TaskDTO {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-//    private String team;
+    private Set<UUID> teamMembers;
     private String project;
     private List<CommonAttachmentDTO> attachments;
     private Status taskStatus;

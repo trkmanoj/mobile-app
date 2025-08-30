@@ -216,7 +216,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .sorted(Comparator.comparing(Project::getModifiedDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                 .map(project ->
                 {
-                    List<Task> tasks = taskRepository.findByProjectProjectId(project.getProjectId());
+                    List<Task> tasks = taskRepository.findByProjectProjectIdAndStatusTrue(project.getProjectId());
 
                     return new ProjectDTO(
                             project.getProjectId(),
@@ -232,7 +232,7 @@ public class ProjectServiceImpl implements ProjectService {
                     );
                 })
                 .collect(Collectors.toList());
-
+        System.out.println(projectDTOS);
         log.info("ProjectServiceImpl:findAll execution ended.");
         return projectDTOS;
     }

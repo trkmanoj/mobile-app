@@ -5,10 +5,12 @@ import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.entity.TaskAttachment;
+import com.mnj.mobile.repository.MemberRepository;
 import com.mnj.mobile.repository.ProjectRepository;
 import com.mnj.mobile.repository.TaskRepository;
 import com.mnj.mobile.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,9 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +39,9 @@ public class TaskServiceImpl implements TaskService {
     @Value("${application.attachment}")
     private String filePath;
 
+   @Autowired
+    private MemberRepository memberRepository;
+
     public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository, ObjectMapper objectMapper) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
@@ -52,6 +55,8 @@ public class TaskServiceImpl implements TaskService {
 //        TaskDTO taskDTO = objectMapper.readValue(taskStr, TaskDTO.class);
 
         List<TaskAttachment> list = new ArrayList<>();
+        if (files != null && files.length > 0) {
+
         for (MultipartFile file : files) {
             Path uploadPath = Paths.get(filePath);
             if (!Files.exists(uploadPath)) {
@@ -78,7 +83,9 @@ public class TaskServiceImpl implements TaskService {
 
             list.add(attachment);
         }
-
+        }
+        Set<UUID> memberIds = new HashSet<>();
+        memberIds=taskDTO.getTeamMembers();
         Task task = new Task(
                 taskDTO.getTaskId(),
                 taskDTO.getName(),
@@ -90,7 +97,9 @@ public class TaskServiceImpl implements TaskService {
                 taskDTO.getTaskStatus(),
                 taskDTO.isStatus(),
                 LocalDateTime.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
+
         );
 
         taskRepository.save(task);
@@ -109,6 +118,7 @@ public class TaskServiceImpl implements TaskService {
                 task.getName(),
                 task.getStartDate(),
                 task.getEndDate(),
+null,
 //                task.getTeam(),
                 task.getProject().getProjectId().toString(),
                 task.getAttachments().stream()
