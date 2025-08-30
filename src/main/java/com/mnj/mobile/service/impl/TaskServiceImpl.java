@@ -121,15 +121,16 @@ public class TaskServiceImpl implements TaskService {
 null,
 //                task.getTeam(),
                 task.getProject().getProjectId().toString(),
-                task.getAttachments().stream()
-                        .map(attachment ->
-                                new CommonAttachmentDTO(
-                                        attachment.getFileName(),
-                                        attachment.getMimeType(),
-                                        attachment.getFileSize(),
-                                        safeGetImagePathBytes(attachment.getFilePath()),
-                                        attachment.getFilePath()
-                                )).collect(Collectors.toList()),
+null,
+//                task.getAttachments().stream()
+//                        .map(attachment ->
+//                                new CommonAttachmentDTO(
+//                                        attachment.getFileName(),
+//                                        attachment.getMimeType(),
+//                                        attachment.getFileSize(),
+//                                        safeGetImagePathBytes(attachment.getFilePath()),
+//                                        attachment.getFilePath()
+//                                )).collect(Collectors.toList()),
                 task.getTaskStatus(),
                 task.isStatus(),
                 task.getCreatedDate(),
