@@ -24,12 +24,12 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "files", required = false) MultipartFile[] file,
+    public ResponseEntity<CommonResponse> createMember(@RequestParam(value = "files", required = false) MultipartFile file,
                                                        @RequestParam("member") String member) {
         log.info("MemberController::createMember dto {}", member);
         CommonResponse commonResponse = new CommonResponse();
         try {
-            String response = memberService.createMember(file[0], member);
+            String response = memberService.createMember(file, member);
 
             if (!response.equals("success.")) {
                 commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));
