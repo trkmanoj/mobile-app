@@ -11,7 +11,9 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -42,4 +44,11 @@ public class Task {
     private boolean status = true;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    @ManyToMany
+    @JoinTable(
+            name = "task_members",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private Set<Member> members = new HashSet<>();
 }

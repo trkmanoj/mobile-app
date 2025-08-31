@@ -27,6 +27,7 @@ public class ProjectDTO {
     private boolean status;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+//    private Map<Status, Long> taskCount;
     private Map<Status, Long> taskCount;
 
     // add team and members to this constructor
