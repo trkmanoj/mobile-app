@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mnj.mobile.dto.IssueDTO;
+import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.service.IssueService;
 import com.mnj.mobile.util.CommonConst;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -45,6 +48,32 @@ public class IssueController {
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
         } catch (Exception ex) {
             log.error("IssueController:createIssue error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<CommonResponse> findIssuesByProject(@PathVariable("projectId") String projectId){
+        log.info("IssueController::findIssuesByProject projectId {}", projectId);
+        CommonResponse commonResponse = new CommonResponse();
+
+        try{
+
+            List<IssueDTO> response = issueService.findIssuesByProject(projectId);
+
+            if (response.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(response));
+            }
+            log.info("IssueController::findIssuesByProject response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+
+        }catch (Exception ex){
+            log.error("IssueController:findIssuesByProject error {}", ex.getMessage());
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

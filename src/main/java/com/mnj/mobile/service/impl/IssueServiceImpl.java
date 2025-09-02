@@ -1,8 +1,8 @@
 package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.IssueDTO;
-import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.entity.*;
 import com.mnj.mobile.repository.IssueRepository;
 import com.mnj.mobile.service.IssueService;
@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -91,6 +92,33 @@ public class IssueServiceImpl implements IssueService {
         issueRepository.save(issue);
         log.info("IssueServiceImpl:createIssue execution ended.");
         return "success.";
+    }
+
+    @Override
+    public List<IssueDTO> findIssuesByProject(String projectId) {
+        log.info("IssueServiceImpl:findIssuesByProject execution started.");
+
+        List<Issue> issues = issueRepository.findByProjectId(projectId);
+
+        List<IssueDTO> issueDTOS = issues.stream().map(issue ->
+                new IssueDTO(
+                        issue.getIssueId(),
+                        issue.getDescription(),
+                        issue.getProjectId(),
+                        issue.getCreatedTime(),
+                        issue.getModifiedTime(),
+                        issue.getAttachments().stream().map(attachment -> new CommonAttachmentDTO(
+                                attachment.getFileName(),
+                                attachment.getMimeType(),
+                                attachment.getFileSize(),
+                                safeGetImagePathBytes(attachment.getFilePath()),
+                                attachment.getFilePath()
+                                )).collect(Collectors.toList()),
+                        issue.isStatus()
+                )).collect(Collectors.toList());
+
+        log.info("IssueServiceImpl:findIssuesByProject execution ended.");
+        return issueDTOS;
     }
 
     private byte[] getImagePathBytes(String imgUrl) throws IOException {

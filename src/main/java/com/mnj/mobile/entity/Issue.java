@@ -28,7 +28,7 @@ public class Issue {
     private String projectId;
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "issueId",referencedColumnName = "issueId")
     private List<IssueAttachment> attachments;
     private boolean status;
