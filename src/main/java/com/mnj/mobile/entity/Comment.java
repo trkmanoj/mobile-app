@@ -26,7 +26,7 @@ public class Comment {
     private String description;
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "IssueId")
     private Issue issue;
     private boolean status;

@@ -17,4 +17,12 @@ public class CommentDTO {
     private LocalDateTime modifiedTime;
     private boolean status;
     private String issue;
+
+    public CommentDTO(UUID id, String description, LocalDateTime createdTime, LocalDateTime modifiedTime, boolean status) {
+        this.id = id;
+        this.description = description;
+        this.createdTime = createdTime;
+        this.modifiedTime = modifiedTime;
+        this.status = status;
+    }
 }

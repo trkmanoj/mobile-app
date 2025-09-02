@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,5 +38,23 @@ public class CommentServiceImpl implements CommentService {
 
         log.info("CommentServiceImpl:createComment execution ended.");
         return "success.";
+    }
+
+    @Override
+    public List<CommentDTO> findCommentsByIssue(String issueId) {
+        log.info("CommentServiceImpl:findCommentsByIssue execution started.");
+
+        List<Comment> comments = commentRepository.findByIssueIssueId(issueId);
+
+        List<CommentDTO> list = comments.stream().map(comment -> new CommentDTO(
+               comment.getId(),
+               comment.getDescription(),
+               comment.getCreatedTime(),
+               comment.getModifiedTime(),
+               comment.isStatus()
+        )).collect(Collectors.toList());
+
+        log.info("CommentServiceImpl:findCommentsByIssue execution ended.");
+        return list;
     }
 }
