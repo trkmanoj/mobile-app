@@ -47,11 +47,11 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepository.findByIssueIssueId(issueId);
 
         List<CommentDTO> list = comments.stream().map(comment -> new CommentDTO(
-               comment.getId(),
-               comment.getDescription(),
-               comment.getCreatedTime(),
-               comment.getModifiedTime(),
-               comment.isStatus()
+                comment.getId(),
+                comment.getDescription(),
+                comment.getCreatedTime(),
+                comment.getModifiedTime(),
+                comment.isStatus()
         )).collect(Collectors.toList());
 
         log.info("CommentServiceImpl:findCommentsByIssue execution ended.");

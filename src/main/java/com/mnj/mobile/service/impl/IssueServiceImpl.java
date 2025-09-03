@@ -122,6 +122,36 @@ public class IssueServiceImpl implements IssueService {
         return issueDTOS;
     }
 
+    @Override
+    public IssueDTO findIssueById(String issueId) {
+        log.info("IssueServiceImpl:findIssueById execution started.");
+
+        if (!issueRepository.existsById(UUID.fromString(issueId))) {
+            return null;
+        }
+
+        Issue issue = issueRepository.findById(UUID.fromString(issueId)).get();
+
+        IssueDTO issueDTO = new IssueDTO(
+                issue.getIssueId(),
+                issue.getDescription(),
+                issue.getProjectId(),
+                issue.getCreatedTime(),
+                issue.getModifiedTime(),
+                issue.getAttachments().stream().map(attachment -> new CommonAttachmentDTO(
+                        attachment.getFileName(),
+                        attachment.getMimeType(),
+                        attachment.getFileSize(),
+                        safeGetImagePathBytes(attachment.getFilePath()),
+                        attachment.getFilePath()
+                )).collect(Collectors.toList()),
+                issue.isStatus()
+        );
+
+        log.info("IssueServiceImpl:findIssueById execution ended.");
+        return issueDTO;
+    }
+
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
         Path targetLocation = Paths.get(imgUrl);
         return Files.readAllBytes(targetLocation);
