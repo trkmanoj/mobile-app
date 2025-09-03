@@ -10,4 +10,6 @@ public interface IssueService {
     String createIssue(MultipartFile[] file, String issue) throws IOException;
 
     List<IssueDTO> findIssuesByProject(String projectId);
+
+    IssueDTO findIssueById(String issueId);
 }
