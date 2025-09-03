@@ -12,4 +12,6 @@ public interface IssueService {
     List<IssueDTO> findIssuesByProject(String projectId);
 
     IssueDTO findIssueById(String issueId);
+
+    String updateIssue(MultipartFile[] files, String issueId, String desc) throws IOException;
 }

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -80,7 +81,7 @@ public class IssueController {
 
     @GetMapping("/{issueId}")
     public ResponseEntity<CommonResponse> findIssueById(@PathVariable("issueId") String issueId){
-        log.info("IssueController::findIssueById projectId {}", issueId);
+        log.info("IssueController::findIssueById issueId {}", issueId);
         CommonResponse commonResponse = new CommonResponse();
 
         try{
@@ -99,6 +100,30 @@ public class IssueController {
 
         }catch (Exception ex){
             log.error("IssueController:findIssueById error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @PutMapping
+    public ResponseEntity<CommonResponse> updateIssue(@RequestParam("files") MultipartFile[] files, @RequestParam("issueId") String issueId, @RequestParam("desc") String desc) {
+        log.info("IssueController::updateIssue issueId {}", issueId);
+
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            String response = issueService.updateIssue(files, issueId, desc);
+
+            if (!response.equals("success.")) {
+                commonResponse.setErrorMessages(Collections.singletonList("Failed ! Please try again"));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(response));
+            }
+            log.info("IssueController::updateIssue response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("IssueController:updateIssue error {}", ex.getMessage());
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
