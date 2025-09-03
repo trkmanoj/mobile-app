@@ -8,6 +8,7 @@ import com.mnj.mobile.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,5 +57,38 @@ public class CommentServiceImpl implements CommentService {
 
         log.info("CommentServiceImpl:findCommentsByIssue execution ended.");
         return list;
+    }
+
+    @Override
+    public CommentDTO findCommentById(String commentId) {
+        log.info("CommentServiceImpl:findCommentById execution started.");
+
+        if (!issueRepository.existsById(UUID.fromString(commentId)))
+            return null;
+
+
+        Comment comment = commentRepository.findById(UUID.fromString(commentId)).get();
+
+        CommentDTO commentDTO = new CommentDTO(
+                comment.getId(),
+                comment.getDescription(),
+                comment.getCreatedTime(),
+                comment.getModifiedTime(),
+                comment.isStatus()
+        );
+
+        log.info("CommentServiceImpl:findCommentById execution ended.");
+        return commentDTO;
+    }
+
+    @Transactional
+    @Override
+    public String updateComment(String commentId, String description) {
+        log.info("CommentServiceImpl:updateComment execution started.");
+
+        commentRepository.updateComment(commentId, description, LocalDateTime.now());
+
+        log.info("CommentServiceImpl:updateComment execution end.");
+        return "success.";
     }
 }

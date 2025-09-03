@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.IssueDTO;
 import com.mnj.mobile.entity.*;
+import com.mnj.mobile.repository.IssueAttachmentRepository;
 import com.mnj.mobile.repository.IssueRepository;
 import com.mnj.mobile.service.IssueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,13 +32,16 @@ public class IssueServiceImpl implements IssueService {
 
     private IssueRepository issueRepository;
 
+    private IssueAttachmentRepository issueAttachmentRepository;
+
     private final ObjectMapper objectMapper;
 
     @Value("${application.attachment}")
     private String filePath;
 
-    public IssueServiceImpl(IssueRepository issueRepository, ObjectMapper objectMapper) {
+    public IssueServiceImpl(IssueRepository issueRepository, IssueAttachmentRepository issueAttachmentRepository, ObjectMapper objectMapper) {
         this.issueRepository = issueRepository;
+        this.issueAttachmentRepository = issueAttachmentRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -149,6 +154,57 @@ public class IssueServiceImpl implements IssueService {
 
         log.info("IssueServiceImpl:findIssueById execution ended.");
         return issueDTO;
+    }
+
+    @Transactional
+    @Override
+    public String updateIssue(MultipartFile[] files, String issueId, String desc) throws IOException {
+        log.info("IssueServiceImpl:updateIssue execution started.");
+
+        Issue issue = issueRepository.findById(UUID.fromString(issueId)).get();
+
+        issueAttachmentRepository.deleteByIssueId(issueId);
+
+        List<IssueAttachment> list = new ArrayList<>();
+        if (files != null) {
+
+            for (MultipartFile file : files) {
+                Path uploadPath = Paths.get(filePath);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                // Generate unique filename
+                String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                Path targetPath = uploadPath.resolve(filename);
+
+                // Best practice: use try-with-resources (auto-close stream)
+                try (InputStream inputStream = file.getInputStream()) {
+                    Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                IssueAttachment attachment = new IssueAttachment(
+                        null,
+                        file.getOriginalFilename(),
+                        targetPath.toString(),
+                        file.getContentType(),
+                        file.getSize()
+                );
+
+
+                list.add(attachment);
+            }
+        }
+
+        Issue issueNew = issue.toBuilder()
+                .attachments(list)
+                .description(desc)
+                .modifiedTime(LocalDateTime.now()).build();
+
+        issueRepository.save(issueNew);
+
+        log.info("IssueServiceImpl:updateIssue execution ended.");
+        return "success.";
     }
 
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
