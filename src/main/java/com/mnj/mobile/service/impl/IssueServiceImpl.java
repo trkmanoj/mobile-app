@@ -145,7 +145,8 @@ public class IssueServiceImpl implements IssueService {
                         safeGetImagePathBytes(attachment.getFilePath()),
                         attachment.getFilePath()
                 )).collect(Collectors.toList()),
-                issue.isStatus()
+                issue.isStatus(),
+                issue.getIssueStatus()
         );
 
         log.info("IssueServiceImpl:findIssueById execution ended.");
