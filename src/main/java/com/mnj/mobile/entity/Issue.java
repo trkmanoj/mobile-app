@@ -32,4 +32,5 @@ public class Issue {
     @JoinColumn(name = "issueId",referencedColumnName = "issueId")
     private List<IssueAttachment> attachments;
     private boolean status;
+    private String issueStatus;
 }

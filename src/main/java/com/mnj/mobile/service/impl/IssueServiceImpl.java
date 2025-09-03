@@ -84,8 +84,8 @@ public class IssueServiceImpl implements IssueService {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 list,
-                dto.isStatus()
-
+                dto.isStatus(),
+                dto.getIssueStatus()
         );
 
 
@@ -114,7 +114,8 @@ public class IssueServiceImpl implements IssueService {
                                 safeGetImagePathBytes(attachment.getFilePath()),
                                 attachment.getFilePath()
                                 )).collect(Collectors.toList()),
-                        issue.isStatus()
+                        issue.isStatus(),
+                        issue.getIssueStatus()
                 )).collect(Collectors.toList());
 
         log.info("IssueServiceImpl:findIssuesByProject execution ended.");

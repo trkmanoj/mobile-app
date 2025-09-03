@@ -19,4 +19,5 @@ public class IssueDTO {
     private LocalDateTime modifiedTime;
     private List<CommonAttachmentDTO> attachments;
     private boolean status;
+    private String issueStatus;
 }
