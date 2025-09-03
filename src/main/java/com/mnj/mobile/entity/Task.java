@@ -37,7 +37,7 @@ public class Task {
     @JoinColumn(name = "projectId")
     private Project project;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "projectId",referencedColumnName = "taskId")
+    @JoinColumn(name = "taskId",referencedColumnName = "taskId")
     private List<TaskAttachment> attachments;
     @Enumerated(EnumType.STRING)
     private Status taskStatus = Status.PENDING;
