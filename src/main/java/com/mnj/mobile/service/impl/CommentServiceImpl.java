@@ -88,6 +88,17 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.updateComment(commentId, description, LocalDateTime.now());
 
+/*
+        Comment comment = commentRepository.findById(UUID.fromString(commentId)).get();
+
+        Comment commentNew = comment.toBuilder()
+                .description(description)
+                .modifiedTime(LocalDateTime.now())
+                .build();
+
+        commentRepository.save(commentNew);
+*/
+
         log.info("CommentServiceImpl:updateComment execution end.");
         return "success.";
     }
