@@ -251,6 +251,18 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
+    @Override
+    public Map<Status, Long> findActiveProjectCount() {
+        log.info("ProjectServiceImpl:findActiveProjectCount execution started.");
+        List<Project> projects = projectRepository.findByStatusTrue();
+
+        Map<Status, Long> result = projects.stream()
+                .collect(Collectors.groupingBy(Project::getProjectStatus, Collectors.counting()));
+
+        log.info("ProjectServiceImpl:findActiveProjectCount execution ended.");
+        return result;
+    }
+
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
         Path targetLocation = Paths.get(imgUrl);
         return Files.readAllBytes(targetLocation);

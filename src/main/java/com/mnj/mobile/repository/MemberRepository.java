@@ -11,4 +11,6 @@ import java.util.UUID;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, UUID> {
     List<Member> findByStatus(boolean status);
+
+    int countByStatus(boolean status);
 }

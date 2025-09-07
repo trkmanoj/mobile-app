@@ -213,6 +213,18 @@ null,
         return taskDTOS;
     }
 
+    @Override
+    public Map<Status, Long> findActiveTasksCount() {
+        log.info("TaskServiceImpl:findActiveTasksCount execution started.");
+        List<Task> tasks = taskRepository.findByStatusTrue();
+
+        Map<Status, Long> result = tasks.stream()
+                .collect(Collectors.groupingBy(Task::getTaskStatus, Collectors.counting()));
+
+        log.info("TaskServiceImpl:findActiveTasksCount execution ended.");
+        return result;
+    }
+
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
         Path targetLocation = Paths.get(imgUrl);
         return Files.readAllBytes(targetLocation);
