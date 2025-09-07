@@ -160,7 +160,7 @@ public class ProjectController {
     }
 
 
-    @GetMapping("/active")
+    @GetMapping("/projectDashboard")
     public ResponseEntity<CommonResponse> findActiveProjectCount() {
         log.info("TaskController::findActiveProjectCount");
         CommonResponse commonResponse = new CommonResponse();
@@ -182,12 +182,12 @@ public class ProjectController {
         }
     }
 
-    @GetMapping("/dashboard")
-    public ResponseEntity<CommonResponse> dashboard() {
+    @GetMapping("/taskDashboard/{projectId}")
+    public ResponseEntity<CommonResponse> dashboard(@PathVariable("projectId") String projectId) {
         log.info("TaskController::dashboard");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            List<DashboardDTO> list  = projectService.dashboard();
+            List<DashboardDTO> list  = projectService.dashboard(projectId);
 
             if (list.isEmpty()) {
                 commonResponse.setErrorMessages(Collections.singletonList("Not found records."));

@@ -261,24 +261,24 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<DashboardDTO> dashboard() {
+    public List<DashboardDTO> dashboard(String projectId) {
         log.info("ProjectServiceImpl:dashboard execution started.");
         List<DashboardDTO> list = new ArrayList<>();
 
-        List<Project> projects = projectRepository.findByStatusTrue();
-        Map<Status, Long> result = projects.stream()
-                .collect(Collectors.groupingBy(Project::getProjectStatus, Collectors.counting()));
+        List<Task> tasks = taskRepository.findByStatusTrueAndProjectProjectId(UUID.fromString(projectId));
+        Map<Status, Long> result = tasks.stream()
+                .collect(Collectors.groupingBy(Task::getTaskStatus, Collectors.counting()));
 
 
-        DashboardDTO totalPro = new DashboardDTO(
+        DashboardDTO total = new DashboardDTO(
                 1,
-                "Total Project",
-                (long) projects.size(),
+                "Total Task",
+                (long) tasks.size(),
                 "Colors.purpleColor",
                 "rgba(255, 228, 255,0.8)"
         );
 
-        list.add(totalPro);
+        list.add(total);
 
 
         DashboardDTO inProgress = new DashboardDTO(
@@ -302,21 +302,18 @@ public class ProjectServiceImpl implements ProjectService {
         list.add(completed);
 
 
-        int activeMembers = memberRepository.countByStatus(true);
 
+        Project project =projectRepository.findById(UUID.fromString(projectId)).get();
 
         DashboardDTO team = new DashboardDTO(
                 4,
                 "Team",
-                (long) activeMembers,
+                (long) project.getMembers().size(),
                 "Colors.pinkColor",
                 "rgba(254, 219, 255,0.8)"
         );
 
         list.add(team);
-
-
-
 
         log.info("ProjectServiceImpl:dashboard execution ended.");
         return list;
