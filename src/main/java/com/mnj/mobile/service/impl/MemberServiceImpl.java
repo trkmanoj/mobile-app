@@ -116,7 +116,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<MemberDTO> findMemberByStatus(boolean status) {
-        log.info("MemberServiceImpl:findMemberByStatus execution ended.");
+        log.info("MemberServiceImpl:findMemberByStatus execution started.");
 
         List<MemberDTO> memberDTOS = memberRepository.findByStatus(status).stream()
                 .map(member -> new MemberDTO(
@@ -137,6 +137,16 @@ public class MemberServiceImpl implements MemberService {
 
         log.info("MemberServiceImpl:findMemberByStatus execution ended.");
         return memberDTOS;
+    }
+
+    @Override
+    public int findActiveMembers() {
+        log.info("MemberServiceImpl:findActiveMembers execution started.");
+
+        int activeMembers = memberRepository.countByStatus(true);
+
+        log.info("MemberServiceImpl:findActiveMembers execution ended.");
+        return activeMembers;
     }
 
     private byte[] getImagePathBytes(String imgUrl) throws IOException {

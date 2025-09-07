@@ -13,4 +13,6 @@ public interface MemberService {
     List<MemberDTO> findAll();
 
     List<MemberDTO> findMemberByStatus(boolean status);
+
+    int findActiveMembers();
 }

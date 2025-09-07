@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.dto.ProjectResponseDTO;
+import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.service.ProjectService;
 import com.mnj.mobile.util.CommonConst;
 import com.mnj.mobile.util.CommonResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -154,6 +156,29 @@ public class ProjectController {
         }
 
         return ResponseEntity.ok(commonResponse);
+    }
+
+
+    @GetMapping("/active")
+    public ResponseEntity<CommonResponse> findActiveProjectCount() {
+        log.info("TaskController::findActiveProjectCount");
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Map<Status, Long> taskCount  = projectService.findActiveProjectCount();
+
+            if (taskCount.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(taskCount));
+            }
+            log.info("TaskController::findActiveProjectCount response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("TaskController:findActiveProjectCount error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
