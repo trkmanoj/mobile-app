@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mnj.mobile.dto.DashboardDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.dto.ProjectResponseDTO;
 import com.mnj.mobile.enums.Status;
@@ -181,5 +182,26 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<CommonResponse> dashboard() {
+        log.info("TaskController::dashboard");
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            List<DashboardDTO> list  = projectService.dashboard();
+
+            if (list.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(list));
+            }
+            log.info("TaskController::findActiveProjectCount response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("TaskController:findActiveProjectCount error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
