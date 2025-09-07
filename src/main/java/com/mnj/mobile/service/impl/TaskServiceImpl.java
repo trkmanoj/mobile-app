@@ -2,7 +2,9 @@ package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.CommonAttachmentDTO;
+import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.TaskDTO;
+import com.mnj.mobile.dto.TaskResponseDTO;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.entity.TaskAttachment;
 import com.mnj.mobile.enums.Status;
@@ -143,36 +145,56 @@ null,
     }
 
     @Override
-    public TaskDTO findById(String taskId) {
+    public TaskResponseDTO findById(String taskId) {
         log.info("TaskServiceImpl:findById execution started.");
 
         if (!taskRepository.existsById(UUID.fromString(taskId)))
             return null;
 
-        Task task = taskRepository.getById(UUID.fromString(taskId));
+        Task project = taskRepository.getById(UUID.fromString(taskId));
 
-        TaskDTO dto = new TaskDTO(
-                task.getTaskId(),
-                task.getName(),
-                task.getStartDate(),
-                task.getEndDate(),
-                null,
-//                task.getTeam(),
-                task.getProject().getProjectId().toString(),
-                null,
-//                task.getAttachments().stream()
-//                        .map(attachment ->
-//                                new CommonAttachmentDTO(
-//                                        attachment.getFileName(),
-//                                        attachment.getMimeType(),
-//                                        attachment.getFileSize(),
-//                                        safeGetImagePathBytes(attachment.getFilePath()),
-//                                        attachment.getFilePath()
-//                                )).collect(Collectors.toList()),
-                task.getTaskStatus(),
-                task.isStatus(),
-                task.getCreatedDate(),
-                task.getModifiedDate()
+        TaskResponseDTO dto = new TaskResponseDTO (
+                project.getTaskId(),
+                project.getName(),
+                project.getStartDate(),
+                project.getEndDate(),
+
+                // ✅ Members mapping with attachment (image)
+                project.getMembers().stream()
+                        .map(member -> new MemberDTO(
+                                member.getId(),
+                                member.getName(),
+                                member.getEmail(),
+                                member.getMobile(),
+                                member.getTeam(),
+                                member.getDesignation(),
+                                member.isStatus(),
+                                member.getImage() != null ? new CommonAttachmentDTO(
+                                        member.getImage().getFileName(),
+                                        member.getImage().getMimeType(),
+                                        member.getImage().getFileSize(),
+                                        safeGetImagePathBytes(member.getImage().getFilePath()),
+                                        member.getImage().getFilePath()
+                                ) : null
+                        ))
+                        .collect(Collectors.toList()),
+
+                // ✅ Project attachments mapping
+                project.getAttachments().stream()
+                        .map(attachment -> new CommonAttachmentDTO(
+                                attachment.getFileName(),
+                                attachment.getMimeType(),
+                                attachment.getFileSize(),
+                                safeGetImagePathBytes(attachment.getFilePath()),
+                                attachment.getFilePath()
+                        ))
+                        .collect(Collectors.toList()),
+
+                project.getTaskStatus(),  // Or use project.getProjectStatus() if stored in DB
+                project.isStatus(),
+                project.getCreatedDate(),
+                project.getModifiedDate(),
+                project.getProject()
         );
 
         log.info("TaskServiceImpl:findById execution ended.");
@@ -192,7 +214,7 @@ null,
                 task.getEndDate(),
                 null,
 //                task.getTeam(),
-                task.getProject().getProjectId().toString(),
+                task.getProject().getName(),
                 null,
 //                task.getAttachments().stream()
 //                        .map(attachment ->

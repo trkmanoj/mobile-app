@@ -2,5 +2,9 @@ package com.mnj.mobile.enums;
 
 public enum Status {
     PENDING,
-    COMPLETED
+    COMPLETED,
+    TODO,
+    INPROGRESS,
+
+    HOLD
 }
