@@ -96,4 +96,24 @@ public class MemberController {
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/active")
+    public ResponseEntity<CommonResponse> findActiveMemberCount() {
+        log.info("MemberController::findActiveMemberCount");
+        CommonResponse commonResponse = new CommonResponse();
+
+        try {
+
+            int response = memberService.findActiveMembers();
+
+            commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+            commonResponse.setPayload(Collections.singletonList(response));
+            log.info("TaskController::findActiveMemberCount response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+
+        } catch (Exception ex) {
+            log.error("TaskController:findActiveMemberCount error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import com.mnj.mobile.dto.CommonAttachmentDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.entity.TaskAttachment;
+import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.repository.MemberRepository;
 import com.mnj.mobile.repository.ProjectRepository;
 import com.mnj.mobile.repository.TaskRepository;
@@ -139,6 +140,89 @@ null,
 
         log.info("TaskServiceImpl:findByProject execution started.");
         return taskDTOS;
+    }
+
+    @Override
+    public TaskDTO findById(String taskId) {
+        log.info("TaskServiceImpl:findById execution started.");
+
+        if (!taskRepository.existsById(UUID.fromString(taskId)))
+            return null;
+
+        Task task = taskRepository.getById(UUID.fromString(taskId));
+
+        TaskDTO dto = new TaskDTO(
+                task.getTaskId(),
+                task.getName(),
+                task.getStartDate(),
+                task.getEndDate(),
+                null,
+//                task.getTeam(),
+                task.getProject().getProjectId().toString(),
+                null,
+//                task.getAttachments().stream()
+//                        .map(attachment ->
+//                                new CommonAttachmentDTO(
+//                                        attachment.getFileName(),
+//                                        attachment.getMimeType(),
+//                                        attachment.getFileSize(),
+//                                        safeGetImagePathBytes(attachment.getFilePath()),
+//                                        attachment.getFilePath()
+//                                )).collect(Collectors.toList()),
+                task.getTaskStatus(),
+                task.isStatus(),
+                task.getCreatedDate(),
+                task.getModifiedDate()
+        );
+
+        log.info("TaskServiceImpl:findById execution ended.");
+        return dto;
+    }
+
+    @Override
+    public List<TaskDTO> findByStatus(Status status) {
+        log.info("TaskServiceImpl:findByStatus execution started.");
+
+        List<Task> tasks = taskRepository.findByTaskStatusAndStatus(status, true);
+
+        List<TaskDTO> taskDTOS = tasks.stream().map(task -> new TaskDTO(
+                task.getTaskId(),
+                task.getName(),
+                task.getStartDate(),
+                task.getEndDate(),
+                null,
+//                task.getTeam(),
+                task.getProject().getProjectId().toString(),
+                null,
+//                task.getAttachments().stream()
+//                        .map(attachment ->
+//                                new CommonAttachmentDTO(
+//                                        attachment.getFileName(),
+//                                        attachment.getMimeType(),
+//                                        attachment.getFileSize(),
+//                                        safeGetImagePathBytes(attachment.getFilePath()),
+//                                        attachment.getFilePath()
+//                                )).collect(Collectors.toList()),
+                task.getTaskStatus(),
+                task.isStatus(),
+                task.getCreatedDate(),
+                task.getModifiedDate()
+        )).collect(Collectors.toList());
+
+        log.info("TaskServiceImpl:findByStatus execution ended.");
+        return taskDTOS;
+    }
+
+    @Override
+    public Map<Status, Long> findActiveTasksCount() {
+        log.info("TaskServiceImpl:findActiveTasksCount execution started.");
+        List<Task> tasks = taskRepository.findByStatusTrue();
+
+        Map<Status, Long> result = tasks.stream()
+                .collect(Collectors.groupingBy(Task::getTaskStatus, Collectors.counting()));
+
+        log.info("TaskServiceImpl:findActiveTasksCount execution ended.");
+        return result;
     }
 
     private byte[] getImagePathBytes(String imgUrl) throws IOException {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.dto.TaskDTO;
+import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.service.TaskService;
 import com.mnj.mobile.util.CommonConst;
 import com.mnj.mobile.util.CommonResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -55,7 +57,7 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/{projectId}")
+    @GetMapping("/project/{projectId}")
     public ResponseEntity<CommonResponse> findByProject(@PathVariable("projectId") String projectId) {
         log.info("TaskController::findByProject projectId {}", projectId);
         CommonResponse commonResponse = new CommonResponse();
@@ -73,6 +75,72 @@ public class TaskController {
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
         } catch (Exception ex) {
             log.error("TaskController:findByProject error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<CommonResponse> findById(@PathVariable("taskId") String taskId) {
+        log.info("TaskController::findById taskId {}", taskId);
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            TaskDTO taskDTO = taskService.findById(taskId);
+
+            if (taskDTO == null) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(taskDTO));
+            }
+            log.info("TaskController::findById response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("TaskController:findById error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<CommonResponse> findByStatus(@PathVariable("status") Status status) {
+        log.info("TaskController::findByStatus status {}", status);
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            List<TaskDTO> taskDTOs = taskService.findByStatus(status);
+
+            if (taskDTOs.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(taskDTOs));
+            }
+            log.info("TaskController::findByStatus response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("TaskController:findByStatus error {}", ex.getMessage());
+            return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<CommonResponse> findActiveTasksCount() {
+        log.info("TaskController::findActiveTasksCount");
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Map<Status, Long> taskCount  = taskService.findActiveTasksCount();
+
+            if (taskCount.isEmpty()) {
+                commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
+                commonResponse.setStatus(CommonConst.EXCEPTION_ERROR);
+            } else {
+                commonResponse.setStatus(CommonConst.SUCCESS_CODE);
+                commonResponse.setPayload(Collections.singletonList(taskCount));
+            }
+            log.info("TaskController::findActiveTasksCount response {}", HttpStatus.OK.value());
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            log.error("TaskController:findActiveTasksCount error {}", ex.getMessage());
             return new ResponseEntity<>(new CommonResponse(CommonConst.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
