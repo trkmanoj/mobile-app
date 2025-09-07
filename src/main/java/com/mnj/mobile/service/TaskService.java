@@ -1,6 +1,7 @@
 package com.mnj.mobile.service;
 
 import com.mnj.mobile.dto.TaskDTO;
+import com.mnj.mobile.dto.TaskResponseDTO;
 import com.mnj.mobile.enums.Status;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +14,7 @@ public interface TaskService {
 
     List<TaskDTO> findByProject(String projectId);
 
-    TaskDTO findById(String taskId);
+    TaskResponseDTO findById(String taskId);
 
     List<TaskDTO> findByStatus(Status status);
 

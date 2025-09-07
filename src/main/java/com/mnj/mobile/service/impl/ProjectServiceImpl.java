@@ -153,7 +153,7 @@ public class ProjectServiceImpl implements ProjectService {
                         ))
                         .collect(Collectors.toList()),
 
-                Status.PENDING,  // Or use project.getProjectStatus() if stored in DB
+                project.getProjectStatus(),  // Or use project.getProjectStatus() if stored in DB
                 project.isStatus(),
                 project.getCreatedDate(),
                 project.getModifiedDate()

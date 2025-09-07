@@ -37,7 +37,7 @@ public class Project {
     @JoinColumn(name = "projectId",referencedColumnName = "projectId")
     private List<Attachment> attachments;
     @Enumerated(EnumType.STRING)
-    private Status projectStatus = Status.PENDING;
+    private Status projectStatus = Status.TODO;
     private boolean status = true;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.dto.TaskDTO;
+import com.mnj.mobile.dto.TaskResponseDTO;
 import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.service.TaskService;
 import com.mnj.mobile.util.CommonConst;
@@ -57,7 +58,7 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/{projectId}")
     public ResponseEntity<CommonResponse> findByProject(@PathVariable("projectId") String projectId) {
         log.info("TaskController::findByProject projectId {}", projectId);
         CommonResponse commonResponse = new CommonResponse();
@@ -79,12 +80,12 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/{taskId}")
+    @GetMapping("/task/{taskId}")
     public ResponseEntity<CommonResponse> findById(@PathVariable("taskId") String taskId) {
         log.info("TaskController::findById taskId {}", taskId);
         CommonResponse commonResponse = new CommonResponse();
         try {
-            TaskDTO taskDTO = taskService.findById(taskId);
+            TaskResponseDTO taskDTO = taskService.findById(taskId);
 
             if (taskDTO == null) {
                 commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
