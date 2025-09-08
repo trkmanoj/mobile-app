@@ -3,6 +3,7 @@ package com.mnj.mobile.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnj.mobile.dto.*;
 import com.mnj.mobile.entity.Attachment;
+import com.mnj.mobile.entity.Member;
 import com.mnj.mobile.entity.Project;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.enums.Status;
@@ -261,11 +262,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<DashboardDTO> dashboard(String projectId) {
+    public List<DashboardDTO> dashboard() {
         log.info("ProjectServiceImpl:dashboard execution started.");
         List<DashboardDTO> list = new ArrayList<>();
 
-        List<Task> tasks = taskRepository.findByStatusTrueAndProjectProjectId(UUID.fromString(projectId));
+        List<Task> tasks = taskRepository.findByStatusTrue();
         Map<Status, Long> result = tasks.stream()
                 .collect(Collectors.groupingBy(Task::getTaskStatus, Collectors.counting()));
 
@@ -303,12 +304,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 
 
-        Project project =projectRepository.findById(UUID.fromString(projectId)).get();
+        int activeMembers = memberRepository.countByStatus(true);
 
         DashboardDTO team = new DashboardDTO(
                 4,
                 "Team",
-                (long) project.getMembers().size(),
+                (long) activeMembers,
                 "Colors.pinkColor",
                 "rgba(254, 219, 255,0.8)"
         );

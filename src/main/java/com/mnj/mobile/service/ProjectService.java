@@ -24,5 +24,5 @@ public interface ProjectService {
 
     Map<Status, Long> findActiveProjectCount();
 
-    List<DashboardDTO> dashboard(String projectId);
+    List<DashboardDTO> dashboard();
 }

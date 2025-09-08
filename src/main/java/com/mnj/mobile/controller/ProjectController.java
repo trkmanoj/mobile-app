@@ -183,11 +183,11 @@ public class ProjectController {
     }
 
     @GetMapping("/taskDashboard/{projectId}")
-    public ResponseEntity<CommonResponse> dashboard(@PathVariable("projectId") String projectId) {
+    public ResponseEntity<CommonResponse> dashboard() {
         log.info("TaskController::dashboard");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            List<DashboardDTO> list  = projectService.dashboard(projectId);
+            List<DashboardDTO> list  = projectService.dashboard();
 
             if (list.isEmpty()) {
                 commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
