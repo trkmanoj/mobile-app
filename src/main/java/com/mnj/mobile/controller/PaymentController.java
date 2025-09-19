@@ -6,7 +6,6 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.net.Webhook;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,15 +15,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 
 @RestController
-@AllArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/payment")
 public class PaymentController {
+
 
     private PaymentService paymentService;
 
     @Value("${stripe.webhook-secret}")
     private String webhookSecret;
+
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     @PostMapping("/create")
     public HashMap<String, Object> createPayment(@RequestBody PaymentRequest request) throws Exception {
