@@ -1,5 +1,6 @@
 package com.mnj.mobile.service;
 
+import com.mnj.mobile.dto.DashboardDTO;
 import com.mnj.mobile.dto.ProjectDTO;
 import com.mnj.mobile.dto.ProjectResponseDTO;
 import com.mnj.mobile.enums.Status;
@@ -22,4 +23,6 @@ public interface ProjectService {
 
 
     Map<Status, Long> findActiveProjectCount();
+
+    List<DashboardDTO> dashboard();
 }

@@ -1,11 +1,9 @@
 package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mnj.mobile.dto.CommonAttachmentDTO;
-import com.mnj.mobile.dto.MemberDTO;
-import com.mnj.mobile.dto.ProjectDTO;
-import com.mnj.mobile.dto.ProjectResponseDTO;
+import com.mnj.mobile.dto.*;
 import com.mnj.mobile.entity.Attachment;
+import com.mnj.mobile.entity.Member;
 import com.mnj.mobile.entity.Project;
 import com.mnj.mobile.entity.Task;
 import com.mnj.mobile.enums.Status;
@@ -261,6 +259,65 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("ProjectServiceImpl:findActiveProjectCount execution ended.");
         return result;
+    }
+
+    @Override
+    public List<DashboardDTO> dashboard() {
+        log.info("ProjectServiceImpl:dashboard execution started.");
+        List<DashboardDTO> list = new ArrayList<>();
+
+        List<Task> tasks = taskRepository.findByStatusTrue();
+        Map<Status, Long> result = tasks.stream()
+                .collect(Collectors.groupingBy(Task::getTaskStatus, Collectors.counting()));
+
+
+        DashboardDTO total = new DashboardDTO(
+                1,
+                "Total Task",
+                (long) tasks.size(),
+                "Colors.purpleColor",
+                "rgba(255, 228, 255,0.8)"
+        );
+
+        list.add(total);
+
+
+        DashboardDTO inProgress = new DashboardDTO(
+                2,
+                Status.PENDING.toString(),
+                result.get(Status.PENDING),
+                "Colors.greenColor",
+                "rgba(91, 254, 255,0.8)"
+        );
+
+        list.add(inProgress);
+
+        DashboardDTO completed = new DashboardDTO(
+                3,
+                Status.COMPLETED.toString(),
+                result.get(Status.COMPLETED),
+                "Colors.pitchColor",
+                "rgba(255, 226, 226,0.8)"
+        );
+
+        list.add(completed);
+
+
+
+        int activeMembers = memberRepository.countByStatus(true);
+
+        DashboardDTO team = new DashboardDTO(
+                4,
+                "Team",
+                (long) activeMembers,
+                "Colors.pinkColor",
+                "rgba(254, 219, 255,0.8)"
+        );
+
+        list.add(team);
+
+        log.info("ProjectServiceImpl:dashboard execution ended.");
+        return list;
     }
 
     private byte[] getImagePathBytes(String imgUrl) throws IOException {
