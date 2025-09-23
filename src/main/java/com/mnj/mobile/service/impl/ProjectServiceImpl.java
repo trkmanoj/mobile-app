@@ -284,8 +284,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         DashboardDTO inProgress = new DashboardDTO(
                 2,
-                Status.PENDING.toString(),
-                result.get(Status.PENDING),
+                Status.INPROGRESS.toString(),
+                result.get(Status.INPROGRESS),
                 "Colors.greenColor",
                 "rgba(91, 254, 255,0.8)"
         );
