@@ -18,6 +18,7 @@ public class ProjectDTO {
 
     private UUID projectId;
     private String name;
+    private String description;
     private LocalDate startDate;
     private LocalDate endDate;
 //    private Team team;

@@ -114,26 +114,60 @@ public class MemberServiceImpl implements MemberService {
         return memberDTOS;
     }
 
+    //    @Override
+//    public List<MemberDTO> findMemberByStatus(boolean status) {
+//        log.info("MemberServiceImpl:findMemberByStatus execution started.");
+//
+//        List<MemberDTO> memberDTOS = memberRepository.findByStatus(status).stream()
+//                .map(member -> new MemberDTO(
+//                        member.getId(),
+//                        member.getName(),
+//                        member.getEmail(),
+//                        member.getMobile(),
+//                        member.getTeam(),
+//                        member.getDesignation(),
+//                        member.isStatus(),
+//                        new CommonAttachmentDTO(
+//                                member.getImage().getFileName(),
+//                                member.getImage().getMimeType(),
+//                                member.getImage().getFileSize(),
+//                                safeGetImagePathBytes(member.getImage().getFilePath()),
+//                                member.getImage().getFilePath())
+//                )).collect(Collectors.toList());
+//
+//        log.info("MemberServiceImpl:findMemberByStatus execution ended.");
+//        return memberDTOS;
+//    }
     @Override
     public List<MemberDTO> findMemberByStatus(boolean status) {
         log.info("MemberServiceImpl:findMemberByStatus execution started.");
 
         List<MemberDTO> memberDTOS = memberRepository.findByStatus(status).stream()
-                .map(member -> new MemberDTO(
-                        member.getId(),
-                        member.getName(),
-                        member.getEmail(),
-                        member.getMobile(),
-                        member.getTeam(),
-                        member.getDesignation(),
-                        member.isStatus(),
-                        new CommonAttachmentDTO(
+                .map(member -> {
+                    CommonAttachmentDTO attachmentDTO = null;
+
+                    if (member.getImage() != null) {
+                        attachmentDTO = new CommonAttachmentDTO(
                                 member.getImage().getFileName(),
                                 member.getImage().getMimeType(),
                                 member.getImage().getFileSize(),
                                 safeGetImagePathBytes(member.getImage().getFilePath()),
-                                member.getImage().getFilePath())
-                )).collect(Collectors.toList());
+                                member.getImage().getFilePath()
+                        );
+                    }
+
+                    return new MemberDTO(
+                            member.getId(),
+                            member.getName(),
+                            member.getEmail(),
+                            member.getMobile(),
+                            member.getTeam(),
+                            member.getDesignation(),
+                            member.isStatus(),
+                            attachmentDTO
+                    );
+                })
+                .collect(Collectors.toList());
 
         log.info("MemberServiceImpl:findMemberByStatus execution ended.");
         return memberDTOS;

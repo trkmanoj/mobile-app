@@ -28,6 +28,7 @@ public class ProjectResponseDTO {
     private boolean status;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private String description;
 
 
 
