@@ -182,7 +182,7 @@ public class ProjectController {
         }
     }
 
-    @GetMapping("/taskDashboard/{projectId}")
+    @GetMapping("/taskDashboard")
     public ResponseEntity<CommonResponse> dashboard() {
         log.info("TaskController::dashboard");
         CommonResponse commonResponse = new CommonResponse();

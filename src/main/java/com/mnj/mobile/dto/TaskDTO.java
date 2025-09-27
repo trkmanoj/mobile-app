@@ -26,4 +26,5 @@ public class TaskDTO {
     private boolean status;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private String description;
 }

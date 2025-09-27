@@ -102,7 +102,8 @@ public class ProjectServiceImpl implements ProjectService {
                 projectDTO.isStatus(),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
-                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null
+                !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null,
+                projectDTO.getDescription()
         );
 
         projectRepository.save(project);
@@ -157,7 +158,8 @@ public class ProjectServiceImpl implements ProjectService {
                 project.getProjectStatus(),  // Or use project.getProjectStatus() if stored in DB
                 project.isStatus(),
                 project.getCreatedDate(),
-                project.getModifiedDate()
+                project.getModifiedDate(),
+                project.getDescription()
         );
 
 
@@ -187,14 +189,15 @@ public class ProjectServiceImpl implements ProjectService {
 //                                member.getDesignation(),
 //                                member.isStatus()
 //                        )).collect(Collectors.toSet()),
-                project.getAttachments().stream().map(
-                        attachment -> new CommonAttachmentDTO(
-                                attachment.getFileName(),
-                                attachment.getMimeType(),
-                                attachment.getFileSize(),
-                                safeGetImagePathBytes(attachment.getFilePath()),
-                                attachment.getFilePath()
-                        )).collect(Collectors.toList()),
+//                project.getAttachments().stream().map(
+//                        attachment -> new CommonAttachmentDTO(
+//                                attachment.getFileName(),
+//                                attachment.getMimeType(),
+//                                attachment.getFileSize(),
+//                                safeGetImagePathBytes(attachment.getFilePath()),
+//                                attachment.getFilePath()
+//                        )).collect(Collectors.toList()),
+                null,
                 project.getProjectStatus(),
                 project.isStatus(),
                 project.getCreatedDate(),
@@ -284,8 +287,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         DashboardDTO inProgress = new DashboardDTO(
                 2,
-                Status.PENDING.toString(),
-                result.get(Status.PENDING),
+                Status.INPROGRESS.toString(),
+                result.get(Status.INPROGRESS),
                 "Colors.greenColor",
                 "rgba(91, 254, 255,0.8)"
         );

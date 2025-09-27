@@ -51,4 +51,5 @@ public class Task {
             inverseJoinColumns = @JoinColumn(name = "member_id")
     )
     private Set<Member> members = new HashSet<>();
+    private String description;
 }

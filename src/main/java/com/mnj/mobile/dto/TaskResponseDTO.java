@@ -28,6 +28,7 @@ public class TaskResponseDTO {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Project project;
+    private String description;
 
 
 
