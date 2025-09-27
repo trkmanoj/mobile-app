@@ -10,7 +10,6 @@ import com.mnj.mobile.service.IssueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -104,7 +103,7 @@ public class IssueServiceImpl implements IssueService {
         log.info("IssueServiceImpl:findIssuesByProject execution started.");
 
         List<Issue> issues = issueRepository.findByProjectId(projectId);
-
+        List<CommonAttachmentDTO> attachments =  new ArrayList<>();
         List<IssueDTO> issueDTOS = issues.stream().map(issue ->
                 new IssueDTO(
                         issue.getIssueId(),
@@ -112,13 +111,7 @@ public class IssueServiceImpl implements IssueService {
                         issue.getProjectId(),
                         issue.getCreatedTime(),
                         issue.getModifiedTime(),
-                        issue.getAttachments().stream().map(attachment -> new CommonAttachmentDTO(
-                                attachment.getFileName(),
-                                attachment.getMimeType(),
-                                attachment.getFileSize(),
-                                safeGetImagePathBytes(attachment.getFilePath()),
-                                attachment.getFilePath()
-                                )).collect(Collectors.toList()),
+                        attachments,
                         issue.isStatus(),
                         issue.getIssueStatus()
                 )).collect(Collectors.toList());
@@ -158,7 +151,6 @@ public class IssueServiceImpl implements IssueService {
         return issueDTO;
     }
 
-    @Transactional
     @Override
     public String updateIssue(MultipartFile[] files, String issueId, String desc) throws IOException {
         log.info("IssueServiceImpl:updateIssue execution started.");

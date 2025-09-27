@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -23,7 +24,7 @@ public class CommentController {
 
     private CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<CommonResponse> createComment(@RequestBody CommentDTO dto) {
         log.info("CommentController::createComment dto {}", ValueMapper.jsonAsString(dto));
         CommonResponse commonResponse = new CommonResponse();
@@ -45,8 +46,8 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/{issueId}")
-    public ResponseEntity<CommonResponse> findCommentsByIssue(@PathVariable("issueId") String issueId){
+    @GetMapping("/getComments/{issueId}")
+    public ResponseEntity<CommonResponse> findCommentsByIssue(@PathVariable("issueId") UUID issueId){
         log.info("CommentController::findCommentsByIssue issueId {}", issueId);
         CommonResponse commonResponse = new CommonResponse();
 

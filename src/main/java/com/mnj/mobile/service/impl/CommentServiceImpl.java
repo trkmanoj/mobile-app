@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDTO> findCommentsByIssue(String issueId) {
+    public List<CommentDTO> findCommentsByIssue(UUID issueId) {
         log.info("CommentServiceImpl:findCommentsByIssue execution started.");
 
         List<Comment> comments = commentRepository.findByIssueIssueId(issueId);

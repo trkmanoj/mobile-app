@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
-    List<Comment> findByIssueIssueId(String issueId);
+    List<Comment> findByIssueIssueId(UUID issueId);
 
     @Modifying
     @Query(value = "update comment set description = ?2, modifiedTime = ?3 where id = ?1", nativeQuery = true)
