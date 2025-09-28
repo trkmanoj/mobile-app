@@ -33,4 +33,5 @@ public class Issue {
     private List<IssueAttachment> attachments;
     private boolean status;
     private String issueStatus;
+    private String issueCategory;
 }

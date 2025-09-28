@@ -89,7 +89,8 @@ public class IssueServiceImpl implements IssueService {
                 LocalDateTime.now(),
                 list,
                 dto.isStatus(),
-                dto.getIssueStatus()
+                dto.getIssueStatus(),
+                dto.getIssueCategory()
         );
 
 
@@ -113,7 +114,8 @@ public class IssueServiceImpl implements IssueService {
                         issue.getModifiedTime(),
                         attachments,
                         issue.isStatus(),
-                        issue.getIssueStatus()
+                        issue.getIssueStatus(),
+                        issue.getIssueCategory()
                 )).collect(Collectors.toList());
 
         log.info("IssueServiceImpl:findIssuesByProject execution ended.");
@@ -144,7 +146,8 @@ public class IssueServiceImpl implements IssueService {
                         attachment.getFilePath()
                 )).collect(Collectors.toList()),
                 issue.isStatus(),
-                issue.getIssueStatus()
+                issue.getIssueStatus(),
+                issue.getIssueCategory()
         );
 
         log.info("IssueServiceImpl:findIssueById execution ended.");
