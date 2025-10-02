@@ -1,6 +1,7 @@
 package com.mnj.mobile.entity;
 
 
+import com.mnj.mobile.enums.PriorityStatus;
 import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.enums.Team;
 import lombok.AllArgsConstructor;
@@ -49,5 +50,6 @@ public class Project {
     )
     private Set<Member> members = new HashSet<>();
     private String description;
+    private PriorityStatus priorityStatus;
 
 }

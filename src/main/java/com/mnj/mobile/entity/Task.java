@@ -1,5 +1,6 @@
 package com.mnj.mobile.entity;
 
+import com.mnj.mobile.enums.PriorityStatus;
 import com.mnj.mobile.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,4 +53,6 @@ public class Task {
     )
     private Set<Member> members = new HashSet<>();
     private String description;
+    @Enumerated(EnumType.STRING)
+    private PriorityStatus priorityStatus ;
 }

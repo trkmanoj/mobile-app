@@ -1,5 +1,6 @@
 package com.mnj.mobile.dto;
 
+import com.mnj.mobile.enums.PriorityStatus;
 import com.mnj.mobile.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class ProjectResponseDTO {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private String description;
+    private PriorityStatus priorityStatus;
 
 
 

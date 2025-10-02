@@ -1,6 +1,7 @@
 package com.mnj.mobile.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.mnj.mobile.enums.PriorityStatus;
 import com.mnj.mobile.enums.Status;
 import com.mnj.mobile.enums.Team;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class ProjectDTO {
     private LocalDateTime modifiedDate;
 //    private Map<Status, Long> taskCount;
     private Map<Status, Long> taskCount;
+    private PriorityStatus priorityStatus;
 
     // add team and members to this constructor
     public ProjectDTO(UUID projectId, String name, LocalDate startDate, LocalDate endDate, List<CommonAttachmentDTO> attachments, Status projectStatus, boolean status, LocalDateTime createdDate, LocalDateTime modifiedDate) {

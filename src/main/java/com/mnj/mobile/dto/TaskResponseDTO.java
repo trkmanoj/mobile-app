@@ -1,6 +1,7 @@
 package com.mnj.mobile.dto;
 
 import com.mnj.mobile.entity.Project;
+import com.mnj.mobile.enums.PriorityStatus;
 import com.mnj.mobile.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class TaskResponseDTO {
     private LocalDateTime modifiedDate;
     private Project project;
     private String description;
+    private PriorityStatus priorityStatus;
 
 
 

@@ -103,7 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null,
-                projectDTO.getDescription()
+                projectDTO.getDescription(),
+                projectDTO.getPriorityStatus()
         );
 
         projectRepository.save(project);
@@ -159,7 +160,8 @@ public class ProjectServiceImpl implements ProjectService {
                 project.isStatus(),
                 project.getCreatedDate(),
                 project.getModifiedDate(),
-                project.getDescription()
+                project.getDescription(),
+                project.getPriorityStatus()
         );
 
 

@@ -102,7 +102,8 @@ public class TaskServiceImpl implements TaskService {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 !memberIds.isEmpty() ? new HashSet<>(memberRepository.findAllById(memberIds)) : null,
-                taskDTO.getDescription()
+                taskDTO.getDescription(),
+                taskDTO.getPriorityStatus()
 
         );
 
@@ -139,7 +140,8 @@ null,
                 task.isStatus(),
                 task.getCreatedDate(),
                 task.getModifiedDate(),
-                task.getDescription()
+                task.getDescription(),
+                task.getPriorityStatus()
         )).collect(Collectors.toList());
 
         log.info("TaskServiceImpl:findByProject execution started.");
@@ -197,7 +199,8 @@ null,
                 project.getCreatedDate(),
                 project.getModifiedDate(),
                 project.getProject(),
-                project.getDescription()
+                project.getDescription(),
+                project.getPriorityStatus()
         );
 
         log.info("TaskServiceImpl:findById execution ended.");
@@ -232,7 +235,8 @@ null,
                 task.isStatus(),
                 task.getCreatedDate(),
                 task.getModifiedDate(),
-                task.getDescription()
+                task.getDescription(),
+                task.getPriorityStatus()
         )).collect(Collectors.toList());
 
         log.info("TaskServiceImpl:findByStatus execution ended.");
