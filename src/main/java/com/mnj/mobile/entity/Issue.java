@@ -34,4 +34,8 @@ public class Issue {
     private boolean status;
     private String issueStatus;
     private String issueCategory;
+    private String dispute;
+    private String pathogen;
+    private String subCategory;
+    private String scm;
 }

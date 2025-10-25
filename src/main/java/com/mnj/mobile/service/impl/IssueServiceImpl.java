@@ -90,7 +90,11 @@ public class IssueServiceImpl implements IssueService {
                 list,
                 dto.isStatus(),
                 dto.getIssueStatus(),
-                dto.getIssueCategory()
+                dto.getIssueCategory(),
+                dto.getDispute(),
+                dto.getPathogen(),
+                dto.getSubCategory(),
+                dto.getScm()
         );
 
 
@@ -115,7 +119,11 @@ public class IssueServiceImpl implements IssueService {
                         attachments,
                         issue.isStatus(),
                         issue.getIssueStatus(),
-                        issue.getIssueCategory()
+                        issue.getIssueCategory(),
+                        issue.getDispute(),
+                        issue.getPathogen(),
+                        issue.getSubCategory(),
+                        issue.getScm()
                 )).collect(Collectors.toList());
 
         log.info("IssueServiceImpl:findIssuesByProject execution ended.");
@@ -147,7 +155,11 @@ public class IssueServiceImpl implements IssueService {
                 )).collect(Collectors.toList()),
                 issue.isStatus(),
                 issue.getIssueStatus(),
-                issue.getIssueCategory()
+                issue.getIssueCategory(),
+                issue.getDispute(),
+                issue.getPathogen(),
+                issue.getSubCategory(),
+                issue.getScm()
         );
 
         log.info("IssueServiceImpl:findIssueById execution ended.");
