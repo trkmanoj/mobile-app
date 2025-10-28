@@ -307,7 +307,26 @@ public class ProjectServiceImpl implements ProjectService {
 
         list.add(completed);
 
+        DashboardDTO todo = new DashboardDTO(
+                3,
+                Status.TODO.toString(),
+                result.get(Status.TODO),
+                "Colors.pitchColor",
+                "rgba(255, 226, 226,0.8)"
+        );
 
+        list.add(todo);
+
+        DashboardDTO hold = new DashboardDTO(
+                3,
+                Status.HOLD.toString(),
+                result.get(Status.HOLD),
+                "Colors.pitchColor",
+                "rgba(255, 226, 226,0.8)"
+        );
+
+        list.add(hold);
+        
 
         int activeMembers = memberRepository.countByStatus(true);
 
