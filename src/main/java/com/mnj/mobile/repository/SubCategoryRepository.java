@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface SubCategoryRepository extends JpaRepository<SubCategory, Integer> {
-    @Query(value = "select * from sub_category where pathogensId = ?1", nativeQuery = true)
+    @Query(value = "select * from sub_category where pathogens_id = ?1", nativeQuery = true)
     List<SubCategory> findByPathogens(Integer id);
 }
