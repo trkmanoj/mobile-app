@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PathogensRepository extends JpaRepository<Pathogens, Integer> {
     List<Pathogens> findByType(String type);
+
+    Pathogens findByName(String pathogen);
 }

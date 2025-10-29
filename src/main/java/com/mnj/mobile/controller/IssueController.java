@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mnj.mobile.dto.IssueDTO;
+import com.mnj.mobile.dto.IssueResponse;
 import com.mnj.mobile.dto.MemberDTO;
 import com.mnj.mobile.dto.TaskDTO;
 import com.mnj.mobile.service.IssueService;
@@ -61,7 +62,7 @@ public class IssueController {
 
         try{
 
-            List<IssueDTO> response = issueService.findIssuesByProject(projectId);
+            List<IssueResponse> response = issueService.findIssuesByProject(projectId);
 
             if (response.isEmpty()) {
                 commonResponse.setErrorMessages(Collections.singletonList("Not found records."));
@@ -86,7 +87,7 @@ public class IssueController {
 
         try{
 
-            IssueDTO response = issueService.findIssueById(issueId);
+            IssueResponse response = issueService.findIssueById(issueId);
 
             if (response == null) {
                 commonResponse.setErrorMessages(Collections.singletonList("Not found records."));

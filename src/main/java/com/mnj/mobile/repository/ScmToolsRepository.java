@@ -11,4 +11,6 @@ import java.util.List;
 public interface ScmToolsRepository extends JpaRepository<ScmTools, Integer> {
     @Query(value = "select * from scm_tool where sub_category_id = ?1",nativeQuery = true)
     List<ScmTools> findBySubCategory(Integer id);
+
+    ScmTools findByName(String name);
 }

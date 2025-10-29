@@ -1,11 +1,9 @@
 package com.mnj.mobile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mnj.mobile.dto.CommonAttachmentDTO;
-import com.mnj.mobile.dto.IssueDTO;
+import com.mnj.mobile.dto.*;
 import com.mnj.mobile.entity.*;
-import com.mnj.mobile.repository.IssueAttachmentRepository;
-import com.mnj.mobile.repository.IssueRepository;
+import com.mnj.mobile.repository.*;
 import com.mnj.mobile.service.IssueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,14 +31,23 @@ public class IssueServiceImpl implements IssueService {
 
     private IssueAttachmentRepository issueAttachmentRepository;
 
+    private PathogensRepository pathogensRepository;
+
+    private ScmToolsRepository scmToolsRepository;
+
+    private SubCategoryRepository subCategoryRepository;
+
     private final ObjectMapper objectMapper;
 
     @Value("${application.attachment}")
     private String filePath;
 
-    public IssueServiceImpl(IssueRepository issueRepository, IssueAttachmentRepository issueAttachmentRepository, ObjectMapper objectMapper) {
+    public IssueServiceImpl(IssueRepository issueRepository, IssueAttachmentRepository issueAttachmentRepository, PathogensRepository pathogensRepository, ScmToolsRepository scmToolsRepository, SubCategoryRepository subCategoryRepository, ObjectMapper objectMapper) {
         this.issueRepository = issueRepository;
         this.issueAttachmentRepository = issueAttachmentRepository;
+        this.pathogensRepository = pathogensRepository;
+        this.scmToolsRepository = scmToolsRepository;
+        this.subCategoryRepository = subCategoryRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -104,13 +111,13 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<IssueDTO> findIssuesByProject(String projectId) {
+    public List<IssueResponse> findIssuesByProject(String projectId) {
         log.info("IssueServiceImpl:findIssuesByProject execution started.");
 
         List<Issue> issues = issueRepository.findByProjectId(projectId);
         List<CommonAttachmentDTO> attachments =  new ArrayList<>();
-        List<IssueDTO> issueDTOS = issues.stream().map(issue ->
-                new IssueDTO(
+        List<IssueResponse> issueDTOS = issues.stream().map(issue ->
+                new IssueResponse(
                         issue.getIssueId(),
                         issue.getDescription(),
                         issue.getProjectId(),
@@ -121,9 +128,9 @@ public class IssueServiceImpl implements IssueService {
                         issue.getIssueStatus(),
                         issue.getIssueCategory(),
                         issue.getDispute(),
-                        issue.getPathogen(),
-                        issue.getSubCategory(),
-                        issue.getScm()
+                        convertToPathogenDTO(issue.getPathogen()),
+                        convertSubCat(issue.getSubCategory()),
+                        convertScm(issue.getScm())
                 )).collect(Collectors.toList());
 
         log.info("IssueServiceImpl:findIssuesByProject execution ended.");
@@ -131,7 +138,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO findIssueById(String issueId) {
+    public IssueResponse findIssueById(String issueId) {
         log.info("IssueServiceImpl:findIssueById execution started.");
 
         if (!issueRepository.existsById(UUID.fromString(issueId))) {
@@ -140,7 +147,7 @@ public class IssueServiceImpl implements IssueService {
 
         Issue issue = issueRepository.findById(UUID.fromString(issueId)).get();
 
-        IssueDTO issueDTO = new IssueDTO(
+        IssueResponse issueDTO = new IssueResponse(
                 issue.getIssueId(),
                 issue.getDescription(),
                 issue.getProjectId(),
@@ -157,9 +164,9 @@ public class IssueServiceImpl implements IssueService {
                 issue.getIssueStatus(),
                 issue.getIssueCategory(),
                 issue.getDispute(),
-                issue.getPathogen(),
-                issue.getSubCategory(),
-                issue.getScm()
+                convertToPathogenDTO(issue.getPathogen()),
+                convertSubCat(issue.getSubCategory()),
+                convertScm(issue.getScm())
         );
 
         log.info("IssueServiceImpl:findIssueById execution ended.");
@@ -228,4 +235,36 @@ public class IssueServiceImpl implements IssueService {
             throw new UncheckedIOException(e);
         }
     }
+
+    private PathogensDTO convertToPathogenDTO(String name){
+        Pathogens pathogens = pathogensRepository.findByName(name);
+        return new PathogensDTO(
+                pathogens.getId(),
+                pathogens.getName(),
+                pathogens.getType(),
+                pathogens.isStatus()
+        );
+    }
+
+    private SubCategoryDTO convertSubCat(String name){
+        SubCategory subCategory = subCategoryRepository.findByName(name);
+
+        return new SubCategoryDTO(
+                subCategory.getId(),
+                subCategory.getName(),
+                subCategory.isStatus()
+        );
+    }
+
+    private ScmDTO convertScm(String name){
+        ScmTools scmTools = scmToolsRepository.findByName(name);
+
+        return new ScmDTO(
+                scmTools.getId(),
+                scmTools.getName(),
+                scmTools.isStatus()
+        );
+
+    }
+
 }
